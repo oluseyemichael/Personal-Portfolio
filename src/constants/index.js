@@ -24,10 +24,8 @@ export const EXPERIENCES = [
     year: "June 2024 - Aug 2024",
     role: "Full Stack Developer Intern",
     company: "Internpulse",
-    description: `Backend Development: Partnered with a team of developers to build a robust set of micro-service RESTful APIs for a family fintect product.
-    
-    Frontend Development: Led the frontend team to develop the UI and integration APIs for a family fintect product.
-`,
+    description: `Backend Development: Partnered with a team of developers to build a robust set of micro-service RESTful APIs for a fintect product. \n
+    Frontend Development: Led the frontend team to develop the UI and integration APIs for https://famtrust-frontend-five.vercel.app/.`,
     technologies: ["HTML", "Javascript", "React.js", "Tailwind CSS", "Python", "Django", "Git & Github"],
   },
   {
