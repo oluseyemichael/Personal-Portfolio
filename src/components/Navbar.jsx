@@ -34,7 +34,7 @@ const Navbar = () => {
         <a href="https://www.instagram.com/bigmike11100" target="_blank" rel="noopener noreferrer">
           <FaInstagram />
         </a>
-        <a href="https://x.com/MichaelOluseyee" target="_blank" rel="noopener noreferrer">
+        <a href="" target="_blank" rel="noopener noreferrer">
           <BsTwitterX />
         </a>
       </div>

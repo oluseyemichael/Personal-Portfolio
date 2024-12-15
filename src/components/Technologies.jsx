@@ -2,7 +2,7 @@ import React from 'react'
 import { RiReactjsLine } from 'react-icons/ri'
 import { PiFileSqlDuotone } from "react-icons/pi";
 import { FaPython } from "react-icons/fa";
-import { SiFlask } from "react-icons/si";
+import { SiFlask, SiDjango } from "react-icons/si";
 
 const Technologies = () => {
     return (
@@ -19,6 +19,9 @@ const Technologies = () => {
                 </div>
                 <div className='rounded-2xl border-4 border-neutral-800 p-4'>
                     <FaPython className='text-7xl text-yellow-300' />
+                </div>
+                <div className='rounded-2xl border-4 border-neutral-800 p-4'>
+                    <SiDjango className='text-7xl text-red-600' />
                 </div>
                 <div className='rounded-2xl border-4 border-neutral-800 p-4'>
                     <SiFlask className='text-7xl text-red-600' />
