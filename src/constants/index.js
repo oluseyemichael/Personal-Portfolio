@@ -51,7 +51,7 @@ export const PROJECTS = [
     image: pathED,
     description:
       "All in one self learning platform",
-    technologies: ["HTML", "CSS", "Python", "Django"],
+    technologies: ["HTML", "CSS", "Python", "Django", "React"],
     link: ["https://path-ed.vercel.app/"]
   },
   {
