@@ -2,6 +2,7 @@ import project1 from "../assets/projects/project-1.png";
 // import project2 from "../assets/projects/project-2.jpg";
 import project3 from "../assets/projects/project-3.png";
 import pathED from "../assets/projects/pathED.png";
+import famtrust from "../assets/projects/famtrust.png";
 
 export const HERO_CONTENT = `I am a passionate full stack developer dedicated to crafting robust and scalable web applications. My goal is to leverage my expertise to create innovative solutions that drive business growth and deliver exceptional user experiences.`;
 
@@ -25,20 +26,20 @@ export const EXPERIENCES = [
     role: "Full Stack Developer Intern",
     company: "Internpulse",
     description: `Backend Development: Partnered with a team of developers to build a robust set of micro-service RESTful APIs for a fintect product. \n
-    Frontend Development: Led the frontend team to develop the UI and integration APIs for https://famtrust-frontend-five.vercel.app/.`,
+    Frontend Development: Led the frontend team to develop the UI and integration APIs for Famtrust.`,
     technologies: ["HTML", "Javascript", "React.js", "Tailwind CSS", "Python", "Django", "Git & Github"],
   },
   {
-    year: "2023",
+    year: "March 2023 - December 2025",
     role: "IT Intern",
     company: "Taffiecomms Pvt Ltd",
-    description: `lorem Ipsum`,
+    description: `Supported IoT-based asset management, client interactions, and system troubleshooting. Managed social media campaigns and analyzed data for actionable business insights. Conducted training for clients and interns, ensuring effective use of IT systems.`,
     technologies: ["Python", "Linux", "Excel", "MySQL"],
   },
   {
     year: "2020",
     role: "Web Development Intern",
-    company: "ISSL",
+    company: "Integrated Software Services Lagos",
     description: `Learnt the basics of web development.`,
     technologies: ["HTML", "CSS"],
   },
@@ -47,38 +48,37 @@ export const EXPERIENCES = [
 export const PROJECTS = [
   {
     title: "PathED",
-    //change
     image: pathED,
     description:
-      "All in one self learning platform",
-    technologies: ["HTML", "CSS", "Python", "Django", "React"],
-    link: ["https://path-ed.vercel.app/"]
+      "PathED is an all-in-one self-learning platform designed to provide structured learning paths, curated educational resources, and interactive assessments. The platform automates content discovery by fetching high-quality YouTube videos and blog articles based on topic relevance.",
+    technologies: ["HTML", "CSS", "Javascript", "Tailwind", "React", "Python", "Django"],
+    link: "https://path-ed.vercel.app/"
   },
   {
-    title: "University Chatbot",
-    image: project1,
-    description:
-      "An enquiry chatbot for a university",
-    technologies: ["HTML", "CSS", "Python", "Flask"],
+    title: "Famtrust",
+    image: famtrust,
+    description:"FamTrust is a fintech web application that enables families to securely manage shared finances, sub-accounts, and transactions in one platform. It is designed to simplify financial planning, provide controlled fund access, and enhance family financial transparency.",
+    technologies: ["HTML", "CSS","JavaScript","Tailwind", "React", "python", "Django"],
+    link: "https://famtrust-frontend-five.vercel.app/"
   },
-  {
-    title: "Map Locator",
-    // image: project2,
-    description:
-      "A flask app for point out any location",
-    technologies: ["HTML", "CSS", "Python", "Django"],
-  },
-  {
-    title: "Portfolio Website",
-    image: project3,
-    description:
-      "A personal portfolio website showcasing projects, skills, and contact information.",
-    technologies: ["HTML", "CSS", "React", "Tailwind"],
-  },
+    // {
+  //   title: "University Chatbot",
+  //   image: project1,
+  //   description:
+  //     "An enquiry chatbot for a university",
+  //   technologies: ["HTML", "CSS", "Python", "Flask"],
+  // },
+  // {
+  //   title: "Map Locator",
+  //   // image: project2,
+  //   description:
+  //     "A flask app for point out any location",
+  //   technologies: ["HTML", "CSS", "Python", "Django"],
+  // },
 ];
 
 export const CONTACT = {
   address: "Harare, Zimbabwe ",
   phoneNo: "+263 780044062, +234 8176577730 ",
-  email: "bigmike11100@gmail.com",
+  email: "oluseyemichael11@gmail.com",
 };
