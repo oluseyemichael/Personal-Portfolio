@@ -11,7 +11,7 @@ creating efficient and user-friendly web applications.
 As a first class graduate of ICT, 
 I have honed my skills in technologies like Flask, Python, network design, and cloud computing. 
 My journey in web development began with a deep curiosity for how things work, and 
-it is evolving into a career where I continuously strive to learn and adapt to new challenges. I thrive in collaborative environments and enjoy solving complex problems to deliver high-quality solutions. Outside of coding, I enjoy staying active by playing chess, table tennis, and football. I also love exploring new technologies.`;
+it is evolving into a career where I continuously strive to learn and adapt to new challenges. I thrive in collaborative environments and enjoy solving complex problems to deliver high-quality solutions.`;
 
 export const EXPERIENCES = [
   {
