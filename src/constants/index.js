@@ -50,7 +50,7 @@ export const PROJECTS = [
     title: "PathED",
     image: pathED,
     description:
-      "PathED is an all-in-one self-learning platform designed to provide structured learning paths, curated educational resources, and interactive assessments. The platform automates content discovery by fetching high-quality YouTube videos and blog articles based on topic relevance.",
+      `PathED is an all-in-one self-learning platform designed to provide structured learning paths, curated educational resources, and interactive assessments. The platform automates content discovery by fetching high-quality YouTube videos and blog articles based on topic relevance.`,
     technologies: ["HTML", "CSS", "Javascript", "Tailwind", "React", "Python", "Django"],
     link: "https://path-ed.vercel.app/"
   },
