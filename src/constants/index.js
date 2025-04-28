@@ -23,7 +23,7 @@ export const EXPERIENCES = [
   },
   {
     year: "June 2024 - Aug 2024",
-    role: "Full Stack Developer Intern",
+    role: "Full Stack Development Intern",
     company: "Internpulse",
     description: `Backend Development: Partnered with a team of developers to build a robust set of micro-service RESTful APIs for a fintect product. \n
     Frontend Development: Led the frontend team to develop the UI and integration APIs for Famtrust.`,
@@ -50,7 +50,7 @@ export const PROJECTS = [
     title: "PathED",
     image: pathED,
     description:
-      `PathED is an all-in-one self-learning platform designed to provide structured learning paths, curated educational resources, and interactive assessments. The platform automates content discovery by fetching high-quality YouTube videos and blog articles based on topic relevance.`,
+      `PathED is an AI-powered self-learning platform that generates structured learning paths and automatically curates the most relevant educational videos and blogs. It offers a free, personalized, and engaging learning experience with dynamic content updates, interactive quizzes, and real-time progress tracking.`,
     technologies: ["HTML", "CSS", "Javascript", "Tailwind", "React", "Python", "Django"],
     link: "https://path-ed.vercel.app/"
   },
@@ -78,7 +78,7 @@ export const PROJECTS = [
 ];
 
 export const CONTACT = {
-  address: "Harare, Zimbabwe ",
+  address: "Worldwide",
   phoneNo: "+263 780044062, +234 8176577730 ",
   email: "oluseyemichael11@gmail.com",
 };
