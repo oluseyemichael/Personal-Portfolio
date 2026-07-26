@@ -10,7 +10,7 @@ import { DepthMarkers } from './DepthMarkers.jsx';
 import { LAYERS } from './CameraPath.js';
 import { theme, hex } from '../config/theme.js';
 
-export function Scene({ scrollRef }) {
+export function Scene({ scrollRef, onSelectProject }) {
   return (
     <Canvas
       camera={{ position: [0, 2.5, 7], fov: 55, near: 0.1, far: 200 }}
@@ -38,7 +38,7 @@ export function Scene({ scrollRef }) {
         <AbstractAvatar position={[0, LAYERS.surface, 0]} />
 
         {/* The five layers of the stack */}
-        <StackLayers />
+        <StackLayers onSelectProject={onSelectProject} />
 
         {/* Cable runs connecting the layers - Cat6 bundles + fibre with light pulses */}
         <Cables />

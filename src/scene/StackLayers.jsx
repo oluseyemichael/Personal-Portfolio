@@ -1,11 +1,14 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Text } from '@react-three/drei';
+import { Text, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { theme, hex } from '../config/theme.js';
-import { NeuralNode } from './NeuralNode.jsx';
+import { content } from '../config/content.js';
 import { Connection } from './Connection.jsx';
+import { ProjectMarker } from './ProjectMarker.jsx';
 import { LAYERS } from './CameraPath.js';
+
+const projectsByLayer = (layerKey) => content.projects.filter(p => p.layer === layerKey);
 
 const GOLD = () => new THREE.Color(hex(theme.colors.accentPrimary));
 const AMBER = () => new THREE.Color(hex(theme.colors.accentSecondary));
@@ -42,8 +45,9 @@ function LayerDisc({ y, radius = 9 }) {
 /* ---------------------------------------------------------------------------
  * LAYER 0 - SURFACE / PRODUCT: floating UI fragments
  * ------------------------------------------------------------------------ */
-function ProductLayer() {
+function ProductLayer({ onSelectProject }) {
   const groupRef = useRef();
+  const projects = useMemo(() => projectsByLayer('product'), []);
   const gold = useMemo(GOLD, []);
   const deep = useMemo(DEEP, []);
 
@@ -99,6 +103,16 @@ function ProductLayer() {
           <meshBasicMaterial color={deep} wireframe transparent opacity={0.25} toneMapped={false} />
         </mesh>
       ))}
+
+      {/* Clickable project node(s) for this layer */}
+      {projects.map((p, i) => (
+        <ProjectMarker
+          key={p.id}
+          project={p}
+          position={[2.2 + i * 1.4, 1.9, 2.6]}
+          onSelect={onSelectProject}
+        />
+      ))}
     </group>
   );
 }
@@ -127,7 +141,8 @@ function RequestPulse({ from, to, speed, offset, color }) {
   );
 }
 
-function ApplicationLayer() {
+function ApplicationLayer({ onSelectProject }) {
+  const projects = useMemo(() => projectsByLayer('application'), []);
   const gold = useMemo(GOLD, []);
   const amber = useMemo(AMBER, []);
   const deep = useMemo(DEEP, []);
@@ -249,6 +264,16 @@ function ApplicationLayer() {
       {requests.map(req => (
         <RequestPulse key={req.id} {...req} />
       ))}
+
+      {/* Clickable project node(s) for this layer */}
+      {projects.map((p, i) => (
+        <ProjectMarker
+          key={p.id}
+          project={p}
+          position={[-3 + i * 6, -0.5, 2.8]}
+          onSelect={onSelectProject}
+        />
+      ))}
     </group>
   );
 }
@@ -307,7 +332,8 @@ function ServerRack({ position, slots = 6, seed = 1 }) {
   );
 }
 
-function ServerLayer() {
+function ServerLayer({ onSelectProject }) {
+  const projects = useMemo(() => projectsByLayer('server'), []);
   const racks = useMemo(() => {
     const r = seededRandom(31);
     return Array.from({ length: 7 }, (_, i) => ({
@@ -328,65 +354,186 @@ function ServerLayer() {
       {racks.map(rack => (
         <ServerRack key={rack.id} position={rack.position} slots={rack.slots} seed={rack.seed} />
       ))}
+
+      {/* Clickable project node(s) for this layer */}
+      {projects.map((p, i) => (
+        <ProjectMarker
+          key={p.id}
+          project={p}
+          position={[0 + i * 2, 2.6, 3]}
+          onSelect={onSelectProject}
+        />
+      ))}
     </group>
   );
 }
 
 /* ---------------------------------------------------------------------------
- * LAYER 3 - NETWORK: topology grid (reuses NeuralNode + Connection)
+ * LAYER 3 - NETWORK: skills constellation, clustered by category
  * ------------------------------------------------------------------------ */
-function NetworkLayer() {
-  const { nodes, links } = useMemo(() => {
-    const r = seededRandom(47);
-    const n = [];
-    // Semi-flat grid with jitter - reads as topology, not brain
-    for (let x = -3; x <= 3; x++) {
-      for (let z = -2; z <= 2; z++) {
-        if (r() > 0.25) {
-          n.push({
-            id: `${x}-${z}`,
-            position: [
-              x * 2.2 + (r() - 0.5) * 0.8,
-              (r() - 0.3) * 1.5,
-              z * 2.2 + (r() - 0.5) * 0.8 - 1,
-            ],
-            size: 0.1 + r() * 0.1,
-            pulseSpeed: 0.5 + r() * 1,
-            pulseOffset: r() * Math.PI * 2,
-          });
-        }
-      }
+function SkillNode({ position, size, pulseSpeed, pulseOffset, name }) {
+  const meshRef = useRef();
+  const materialRef = useRef();
+  const [hovered, setHovered] = useState(false);
+  const color = useMemo(() => new THREE.Color(hex(theme.colors.accentPrimary)), []);
+
+  useFrame(({ clock }) => {
+    if (!meshRef.current) return;
+    const t = clock.elapsedTime * pulseSpeed + pulseOffset;
+    const breathe = 1 + Math.sin(t) * 0.15;
+    const hoverScale = hovered ? 1.6 : 1;
+    meshRef.current.scale.setScalar(breathe * hoverScale);
+    if (materialRef.current) {
+      materialRef.current.emissiveIntensity = hovered
+        ? theme.emissive.nodeHover
+        : theme.emissive.nodeIdle + Math.sin(t) * 0.3;
     }
-    // Connect neighbors
-    const l = [];
-    const maxDist = 3.2;
-    for (let i = 0; i < n.length; i++) {
-      for (let j = i + 1; j < n.length; j++) {
-        const dx = n[i].position[0] - n[j].position[0];
-        const dy = n[i].position[1] - n[j].position[1];
-        const dz = n[i].position[2] - n[j].position[2];
-        if (Math.sqrt(dx * dx + dy * dy + dz * dz) < maxDist && r() > 0.4) {
-          l.push({
-            id: `${n[i].id}-${n[j].id}`,
-            from: n[i].position,
-            to: n[j].position,
-            flowSpeed: 0.3 + r() * 0.6,
-            offset: r() * Math.PI * 2,
-          });
-        }
-      }
-    }
-    return { nodes: n, links: l };
+  });
+
+  return (
+    <group position={position}>
+      <mesh
+        ref={meshRef}
+        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
+        onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }}
+      >
+        <sphereGeometry args={[size, 16, 16]} />
+        <meshStandardMaterial
+          ref={materialRef}
+          color={color}
+          emissive={color}
+          emissiveIntensity={theme.emissive.nodeIdle}
+          toneMapped={false}
+        />
+      </mesh>
+      <Html center distanceFactor={8} style={{ pointerEvents: 'none' }}>
+        <div
+          style={{
+            background: 'rgba(5,8,24,0.85)',
+            border: '1px solid rgba(255,193,69,0.35)',
+            color: '#FFF8E7',
+            fontSize: '10px',
+            fontFamily: 'monospace',
+            padding: '4px 8px',
+            borderRadius: '2px',
+            whiteSpace: 'nowrap',
+            transform: 'translateY(-22px)',
+            opacity: hovered ? 1 : 0,
+            transition: 'opacity 0.2s',
+          }}
+        >
+          {name}
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+function ClusterLabel({ position, label }) {
+  return (
+    <Html center position={position} distanceFactor={9} style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          color: '#FFC145',
+          fontFamily: 'monospace',
+          fontSize: '10px',
+          letterSpacing: '0.25em',
+          textTransform: 'uppercase',
+          textShadow: '0 0 8px rgba(255,193,69,0.5)',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {label}
+      </div>
+    </Html>
+  );
+}
+
+function NetworkLayer({ onSelectProject }) {
+  const projects = useMemo(() => projectsByLayer('network'), []);
+
+  // One spatial cluster per skill group, arranged around a ring so
+  // each category reads as a distinct constellation.
+  const clusters = useMemo(() => {
+    const groups = content.skills;
+    return groups.map((group, gi) => {
+      const angle = (gi / groups.length) * Math.PI * 2;
+      const cx = Math.cos(angle) * 5.5;
+      const cz = Math.sin(angle) * 5.5 - 1;
+      const cy = (gi % 2 === 0 ? 1 : -1) * 0.8;
+      const r = seededRandom(gi * 101 + 7);
+
+      const nodes = group.items.map((name, ni) => {
+        const a = (ni / group.items.length) * Math.PI * 2 + r();
+        const radius = 0.9 + r() * 0.7;
+        return {
+          id: `${group.group}-${ni}`,
+          name,
+          position: [
+            cx + Math.cos(a) * radius,
+            cy + (r() - 0.5) * 1.2,
+            cz + Math.sin(a) * radius,
+          ],
+          size: 0.11 + r() * 0.07,
+          pulseSpeed: 0.5 + r() * 1,
+          pulseOffset: r() * Math.PI * 2,
+        };
+      });
+
+      // Connect each node back to the cluster center so it reads as
+      // a hub, plus a few cross-links for texture.
+      const center = [cx, cy, cz];
+      const links = nodes.map(n => ({
+        id: `${n.id}-hub`,
+        from: center,
+        to: n.position,
+        flowSpeed: 0.3 + r() * 0.5,
+        offset: r() * Math.PI * 2,
+      }));
+
+      return { id: group.group, label: group.group, center, labelPosition: [cx, cy + 1.4, cz], nodes, links };
+    });
   }, []);
+
+  // Backbone links connecting adjacent cluster centers - the "topology"
+  const backbone = useMemo(() => {
+    const l = [];
+    for (let i = 0; i < clusters.length; i++) {
+      const a = clusters[i];
+      const b = clusters[(i + 1) % clusters.length];
+      l.push({ id: `backbone-${i}`, from: a.center, to: b.center, flowSpeed: 0.25, offset: i * 0.6 });
+    }
+    return l;
+  }, [clusters]);
 
   return (
     <group position={[0, LAYERS.network, 0]}>
       <LayerDisc y={0} radius={9} />
-      {nodes.map(node => (
-        <NeuralNode key={node.id} {...node} />
+
+      {clusters.map(cluster => (
+        <group key={cluster.id}>
+          <ClusterLabel position={cluster.labelPosition} label={cluster.label} />
+          {cluster.nodes.map(node => (
+            <SkillNode key={node.id} {...node} />
+          ))}
+          {cluster.links.map(link => (
+            <Connection key={link.id} {...link} />
+          ))}
+        </group>
       ))}
-      {links.map(link => (
+
+      {backbone.map(link => (
         <Connection key={link.id} {...link} />
+      ))}
+
+      {/* Clickable project node(s) for this layer */}
+      {projects.map((p, i) => (
+        <ProjectMarker
+          key={p.id}
+          project={p}
+          position={[0 + i * 2, 3, 3]}
+          onSelect={onSelectProject}
+        />
       ))}
     </group>
   );
@@ -466,13 +613,13 @@ function MetalLayer() {
 /* ---------------------------------------------------------------------------
  * Export the full stack
  * ------------------------------------------------------------------------ */
-export function StackLayers() {
+export function StackLayers({ onSelectProject }) {
   return (
     <group>
-      <ProductLayer />
-      <ApplicationLayer />
-      <ServerLayer />
-      <NetworkLayer />
+      <ProductLayer onSelectProject={onSelectProject} />
+      <ApplicationLayer onSelectProject={onSelectProject} />
+      <ServerLayer onSelectProject={onSelectProject} />
+      <NetworkLayer onSelectProject={onSelectProject} />
       <MetalLayer />
     </group>
   );
