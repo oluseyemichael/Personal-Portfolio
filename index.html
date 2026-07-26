@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="theme-color" content="#050818" />
+
+    <title>Michael Oluseye | Every Layer</title>
+    <meta name="description" content="Michael Oluseye. Product analyst and infrastructure engineer. From server racks to product strategy." />
+
+    <meta property="og:title" content="Michael Oluseye | Every Layer" />
+    <meta property="og:description" content="Product analyst and infrastructure engineer. From server racks to product strategy." />
+    <meta property="og:type" content="website" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <style>
+      html, body { margin: 0; padding: 0; background: #050818; color: #FFF8E7; overflow-x: hidden; }
+      body { font-family: 'Inter', system-ui, sans-serif; }
+      #root { min-height: 100vh; }
+
+      /* Instant loading screen (no JS needed) */
+      #initial-loader {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle at center, #101635 0%, #050818 70%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.6s ease;
+      }
+      #initial-loader.hidden { opacity: 0; pointer-events: none; }
+
+      .loader-content { text-align: center; }
+      .loader-dot {
+        width: 8px;
+        height: 8px;
+        margin: 0 auto 28px;
+        border-radius: 50%;
+        background: #FFC145;
+        box-shadow: 0 0 24px 4px rgba(255, 193, 69, 0.35);
+        animation: pulse 1.8s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(0.8); opacity: 0.6; }
+        50% { transform: scale(1.2); opacity: 1; }
+      }
+      .loader-text {
+        font-family: 'Fraunces', Georgia, serif;
+        font-size: 22px;
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        color: #FFF8E7;
+      }
+      .loader-subtext {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        color: rgba(255, 248, 231, 0.35);
+        margin-top: 14px;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="initial-loader">
+      <div class="loader-content">
+        <div class="loader-dot"></div>
+        <div class="loader-text">Michael Oluseye</div>
+        <div class="loader-subtext">Every Layer</div>
+      </div>
+    </div>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

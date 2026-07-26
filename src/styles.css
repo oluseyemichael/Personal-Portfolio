@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    background: #050818;
+    color: #FFF8E7;
+    overflow-x: hidden;
+    scroll-behavior: auto;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .scroll-container {
+    /* This is the scrollable proxy element that drives the camera. */
+    position: relative;
+    width: 100%;
+    height: 500vh; /* 5x viewport height = ~5 zones of scroll */
+  }
+
+  .canvas-container {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+  }
+
+  .ui-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .ui-overlay > * {
+    pointer-events: auto;
+  }
+
+  /* Cinematic vignette over the 3D scene */
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(5, 8, 24, 0.55) 100%),
+      linear-gradient(to bottom, rgba(5, 8, 24, 0.35) 0%, transparent 12%, transparent 88%, rgba(5, 8, 24, 0.45) 100%);
+  }
+}
+
+::selection {
+  background: rgba(255, 193, 69, 0.25);
+  color: #FFF8E7;
+}
+
+/* Custom scrollbar (subtle) */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 193, 69, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 193, 69, 0.3); }
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
