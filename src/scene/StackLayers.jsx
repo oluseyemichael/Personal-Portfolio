@@ -6,6 +6,7 @@ import { theme, hex } from '../config/theme.js';
 import { content } from '../config/content.js';
 import { Connection } from './Connection.jsx';
 import { ProjectMarker } from './ProjectMarker.jsx';
+import { playHover } from '../audio/soundEngine.js';
 import { LAYERS } from './CameraPath.js';
 
 const projectsByLayer = (layerKey) => content.projects.filter(p => p.layer === layerKey);
@@ -374,15 +375,17 @@ function ServerLayer({ onSelectProject }) {
 function SkillNode({ position, size, pulseSpeed, pulseOffset, name }) {
   const meshRef = useRef();
   const materialRef = useRef();
+  const hoverScaleRef = useRef(1);
   const [hovered, setHovered] = useState(false);
   const color = useMemo(() => new THREE.Color(hex(theme.colors.accentPrimary)), []);
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock }, delta) => {
     if (!meshRef.current) return;
     const t = clock.elapsedTime * pulseSpeed + pulseOffset;
     const breathe = 1 + Math.sin(t) * 0.15;
-    const hoverScale = hovered ? 1.6 : 1;
-    meshRef.current.scale.setScalar(breathe * hoverScale);
+    const smoothing = 1 - Math.pow(1 - 0.15, delta * 60);
+    hoverScaleRef.current += ((hovered ? 1.6 : 1) - hoverScaleRef.current) * smoothing;
+    meshRef.current.scale.setScalar(breathe * hoverScaleRef.current);
     if (materialRef.current) {
       materialRef.current.emissiveIntensity = hovered
         ? theme.emissive.nodeHover
@@ -394,7 +397,7 @@ function SkillNode({ position, size, pulseSpeed, pulseOffset, name }) {
     <group position={position}>
       <mesh
         ref={meshRef}
-        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
+        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; playHover(); }}
         onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }}
       >
         <sphereGeometry args={[size, 16, 16]} />

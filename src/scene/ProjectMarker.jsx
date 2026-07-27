@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { theme, hex } from '../config/theme.js';
+import { playHover, playClick } from '../audio/soundEngine.js';
 
 /**
  * An interactive node marking a real project, placed inside whichever
@@ -15,10 +16,11 @@ export function ProjectMarker({ project, position, onSelect }) {
   const [hovered, setHovered] = useState(false);
   const color = useMemo(() => new THREE.Color(hex(theme.colors.accentPrimary)), []);
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (!meshRef.current) return;
     const target = hovered ? 1.35 : 1;
-    meshRef.current.scale.lerp(new THREE.Vector3(target, target, target), 0.15);
+    const smoothing = 1 - Math.pow(1 - 0.15, delta * 60);
+    meshRef.current.scale.lerp(new THREE.Vector3(target, target, target), smoothing);
   });
 
   return (
@@ -29,6 +31,7 @@ export function ProjectMarker({ project, position, onSelect }) {
           e.stopPropagation();
           setHovered(true);
           document.body.style.cursor = 'pointer';
+          playHover();
         }}
         onPointerOut={(e) => {
           e.stopPropagation();
@@ -37,6 +40,7 @@ export function ProjectMarker({ project, position, onSelect }) {
         }}
         onClick={(e) => {
           e.stopPropagation();
+          playClick();
           onSelect(project);
         }}
       >

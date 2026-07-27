@@ -1,4 +1,5 @@
 import { theme } from '../config/theme.js';
+import { playHover, playClick } from '../audio/soundEngine.js';
 
 const ZONE_ORDER = ['landing', 'about', 'work', 'skills', 'contact'];
 
@@ -30,7 +31,8 @@ export function ProgressIndicator({ scrollProgress }) {
               key={key}
               type="button"
               aria-label={`Jump to ${zone.label}`}
-              onClick={() => scrollToProgress(zone.start)}
+              onClick={() => { playClick(); scrollToProgress(zone.start); }}
+              onMouseEnter={playHover}
               className="group absolute -left-2 flex items-center justify-center w-5 h-5 -translate-y-1/2"
               style={{ top }}
             >

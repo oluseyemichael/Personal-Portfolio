@@ -122,9 +122,8 @@ export const content = {
 
   contact: {
     email: 'oluseyemichael11@gmail.com',
-    // TODO(Michael): replace with your real profile URLs
-    github: 'https://github.com/YOUR_GITHUB_USERNAME',
-    linkedin: 'https://linkedin.com/in/YOUR_LINKEDIN_HANDLE',
+    github: 'https://github.com/oluseyemichael',
+    linkedin: 'https://www.linkedin.com/in/michael-oluseye-406558216/',
     cta: "Let's build something that holds up in production.",
   },
 };

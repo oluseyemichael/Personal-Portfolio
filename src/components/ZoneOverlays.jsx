@@ -42,7 +42,7 @@ export function ZoneOverlays({ scrollProgress }) {
       {/* ============ LANDING - left-aligned editorial hero ============ */}
       <div
         className="fixed inset-0 flex items-end pointer-events-none"
-        style={{ opacity: landingOpacity, transition: 'opacity 0.25s' }}
+        style={{ opacity: landingOpacity, transition: 'opacity 0.08s linear' }}
       >
         <div className="w-full px-8 md:px-16 pb-24 md:pb-28 max-w-5xl">
           <p className="font-mono text-[10px] text-cream/40 tracking-[0.35em] uppercase mb-6">
@@ -69,7 +69,7 @@ export function ZoneOverlays({ scrollProgress }) {
       {/* ============ ABOUT ============ */}
       <div
         className="fixed inset-0 flex items-center pointer-events-none"
-        style={{ opacity: aboutOpacity, transition: 'opacity 0.25s' }}
+        style={{ opacity: aboutOpacity, transition: 'opacity 0.08s linear' }}
       >
         <div className="px-8 md:px-16 max-w-3xl">
           <Kicker>Layer 01 &nbsp;/&nbsp; Application</Kicker>
@@ -85,7 +85,7 @@ export function ZoneOverlays({ scrollProgress }) {
       {/* ============ WORK ============ */}
       <div
         className="fixed inset-0 flex items-center pointer-events-none"
-        style={{ opacity: workOpacity, transition: 'opacity 0.25s' }}
+        style={{ opacity: workOpacity, transition: 'opacity 0.08s linear' }}
       >
         <div className="px-8 md:px-16 w-full max-w-4xl">
           <Kicker>Layer 02 &nbsp;/&nbsp; Server</Kicker>
@@ -111,7 +111,7 @@ export function ZoneOverlays({ scrollProgress }) {
       {/* ============ SKILLS ============ */}
       <div
         className="fixed inset-0 flex items-center pointer-events-none"
-        style={{ opacity: skillsOpacity, transition: 'opacity 0.25s' }}
+        style={{ opacity: skillsOpacity, transition: 'opacity 0.08s linear' }}
       >
         <div className="px-8 md:px-16 max-w-4xl">
           <Kicker>Layer 03 &nbsp;/&nbsp; Network</Kicker>
@@ -138,7 +138,7 @@ export function ZoneOverlays({ scrollProgress }) {
         className="fixed inset-0 flex items-center"
         style={{
           opacity: contactOpacity,
-          transition: 'opacity 0.25s',
+          transition: 'opacity 0.08s linear',
           pointerEvents: contactOpacity > 0.5 ? 'auto' : 'none',
         }}
       >

@@ -1,7 +1,11 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { theme, hex } from '../config/theme.js';
+import { playClick } from '../audio/soundEngine.js';
+
+const CLICK_WINDOW_MS = 4000;
+const CLICKS_TO_DANCE = 5;
 
 /**
  * LEGO-style minifig avatar built from primitives.
@@ -36,28 +40,81 @@ function Box({ args, position, color, rotation, roughness = 0.35, metalness = 0.
   );
 }
 
+const DANCE_DURATION = 1.4;
+
 export function AbstractAvatar({ position = [0, 0, 0] }) {
   const groupRef = useRef();
   const entranceRef = useRef(0);
+  const elapsedRef = useRef(0);
+  const danceStartRef = useRef(null);
+  const clickCountRef = useRef(0);
+  const lastClickRef = useRef(0);
   const glowColor = useMemo(() => new THREE.Color(hex(theme.colors.accentPrimary)), []);
+
+  const triggerDance = () => {
+    danceStartRef.current = elapsedRef.current;
+  };
+
+  useEffect(() => {
+    const onEasterEgg = () => triggerDance();
+    window.addEventListener('easter-egg', onEasterEgg);
+    return () => window.removeEventListener('easter-egg', onEasterEgg);
+  }, []);
+
+  const handleClick = (event) => {
+    event.stopPropagation();
+    playClick();
+    const now = event.timeStamp;
+    if (now - lastClickRef.current > CLICK_WINDOW_MS) {
+      clickCountRef.current = 0;
+    }
+    lastClickRef.current = now;
+    clickCountRef.current += 1;
+    if (clickCountRef.current >= CLICKS_TO_DANCE) {
+      clickCountRef.current = 0;
+      triggerDance();
+      window.dispatchEvent(
+        new CustomEvent('easter-egg', { detail: { message: "Okay, okay - I'll get back to work." } }),
+      );
+    }
+  };
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
+    elapsedRef.current = t;
 
     if (entranceRef.current < 1) {
       entranceRef.current = Math.min(1, entranceRef.current + 0.012);
     }
     const e = 1 - Math.pow(1 - entranceRef.current, 3);
 
+    let danceSpin = 0;
+    let danceHop = 0;
+    if (danceStartRef.current !== null) {
+      const danceT = t - danceStartRef.current;
+      if (danceT < DANCE_DURATION) {
+        danceSpin = danceT * 14 * (1 - danceT / DANCE_DURATION);
+        danceHop = Math.abs(Math.sin(danceT * 18)) * 0.25 * (1 - danceT / DANCE_DURATION);
+      } else {
+        danceStartRef.current = null;
+      }
+    }
+
     if (groupRef.current) {
       groupRef.current.scale.setScalar(e * 0.85);
-      groupRef.current.position.y = position[1] + Math.sin(t * 0.7) * 0.04 + (1 - e) * -0.6;
-      groupRef.current.rotation.y = Math.sin(t * 0.25) * 0.35;
+      groupRef.current.position.y = position[1] + Math.sin(t * 0.7) * 0.04 + (1 - e) * -0.6 + danceHop;
+      groupRef.current.rotation.y = Math.sin(t * 0.25) * 0.35 + danceSpin;
     }
   });
 
   return (
-    <group ref={groupRef} position={position}>
+    <group
+      ref={groupRef}
+      position={position}
+      onClick={handleClick}
+      onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; }}
+      onPointerOut={(e) => { e.stopPropagation(); document.body.style.cursor = 'auto'; }}
+    >
       {/* Warm rim glow behind the figure */}
       <mesh position={[0, 1.4, -0.6]}>
         <circleGeometry args={[2.2, 32]} />

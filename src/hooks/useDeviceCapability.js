@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { getGPUTier } from 'detect-gpu';
 
 function hasWebGL() {
   try {
@@ -17,20 +18,42 @@ function computeIsMobile() {
 }
 
 /**
- * True when the viewport is narrow (< 768px) or the device/browser
- * cannot do WebGL. Drives routing between the 3D Scene and the 2D
- * fallback in App.jsx.
+ * Drives routing between the 3D Scene and the 2D fallback, plus how
+ * hard the 3D scene is allowed to push the GPU.
+ *
+ * `isMobile` starts from a synchronous viewport/WebGL check (no flash).
+ * `detect-gpu`'s tier classification resolves shortly after and can
+ * only make things more conservative: a weak GPU (tier 0-1) forces
+ * the 2D fallback even on a wide desktop viewport, and tier 2 dials
+ * bloom/particles down instead of running full effects.
  */
 export function useDeviceCapability() {
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window === 'undefined' ? false : computeIsMobile(),
-  );
+  const [state, setState] = useState(() => ({
+    isMobile: typeof window === 'undefined' ? false : computeIsMobile(),
+    gpuTier: 3,
+  }));
 
   useEffect(() => {
-    const update = () => setIsMobile(computeIsMobile());
+    const update = () => setState((s) => ({ ...s, isMobile: s.isMobile || computeIsMobile() }));
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
   }, []);
 
-  return isMobile;
+  useEffect(() => {
+    let cancelled = false;
+    getGPUTier()
+      .then(({ tier }) => {
+        if (cancelled) return;
+        setState((s) => ({
+          isMobile: s.isMobile || tier <= 1,
+          gpuTier: tier >= 3 ? 3 : 2,
+        }));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return state;
 }

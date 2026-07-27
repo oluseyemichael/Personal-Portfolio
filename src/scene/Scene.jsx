@@ -1,4 +1,5 @@
 import { Canvas } from '@react-three/fiber';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { Suspense } from 'react';
 import * as THREE from 'three';
 import { CameraRig } from './CameraRig.jsx';
@@ -10,7 +11,7 @@ import { DepthMarkers } from './DepthMarkers.jsx';
 import { LAYERS } from './CameraPath.js';
 import { theme, hex } from '../config/theme.js';
 
-export function Scene({ scrollRef, onSelectProject }) {
+export function Scene({ scrollRef, onSelectProject, gpuTier = 3 }) {
   return (
     <Canvas
       camera={{ position: [0, 2.5, 7], fov: 55, near: 0.1, far: 200 }}
@@ -46,11 +47,23 @@ export function Scene({ scrollRef, onSelectProject }) {
         {/* Submarine-style depth readout down the side */}
         <DepthMarkers />
 
-        {/* Atmosphere */}
-        <Particles />
+        {/* Atmosphere - fewer particles on weaker GPUs */}
+        <Particles count={gpuTier >= 3 ? theme.scene.particleCount : Math.round(theme.scene.particleCount * 0.4)} />
 
         {/* Camera driven by scroll */}
         <CameraRig scrollRef={scrollRef} />
+
+        {/* Bloom is what actually makes emissive materials glow.
+            Tier 2 (weaker GPUs) gets a cheaper, lower-res pass. */}
+        <EffectComposer multisampling={gpuTier >= 3 ? 4 : 0}>
+          <Bloom
+            intensity={gpuTier >= 3 ? 0.9 : 0.5}
+            luminanceThreshold={0.2}
+            luminanceSmoothing={0.3}
+            mipmapBlur
+            resolutionScale={gpuTier >= 3 ? 1 : 0.5}
+          />
+        </EffectComposer>
       </Suspense>
     </Canvas>
   );

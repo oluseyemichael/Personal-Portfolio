@@ -13,13 +13,16 @@ export function CameraRig({ scrollRef }) {
   const targetPos = useRef(new THREE.Vector3());
   const targetLookAt = useRef(new THREE.Vector3());
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     const t = easeScroll(scrollRef.current);
     positionCurve.getPointAt(t, targetPos.current);
     lookAtCurve.getPointAt(t, targetLookAt.current);
 
-    // Smoothly interpolate the camera toward the target position
-    camera.position.lerp(targetPos.current, 0.1);
+    // Smoothly interpolate the camera toward the target position.
+    // The lerp factor is tuned for 60fps; scale it by delta so the
+    // camera glides at the same speed regardless of frame rate.
+    const smoothing = 1 - Math.pow(1 - 0.1, delta * 60);
+    camera.position.lerp(targetPos.current, smoothing);
     camera.lookAt(targetLookAt.current);
   });
 
