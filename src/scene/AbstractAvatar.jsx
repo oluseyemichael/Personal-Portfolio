@@ -1,5 +1,6 @@
 import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { theme, hex } from '../config/theme.js';
 import { playClick } from '../audio/soundEngine.js';
@@ -42,7 +43,7 @@ function Box({ args, position, color, rotation, roughness = 0.35, metalness = 0.
 
 const DANCE_DURATION = 1.4;
 
-export function AbstractAvatar({ position = [0, 0, 0] }) {
+export function AbstractAvatar({ position = [0, 0, 0], castShadows = true }) {
   const groupRef = useRef();
   const entranceRef = useRef(0);
   const elapsedRef = useRef(0);
@@ -122,11 +123,11 @@ export function AbstractAvatar({ position = [0, 0, 0] }) {
       </mesh>
 
       {/* ===== HEAD ===== */}
-      <mesh position={[0, 2.55, 0]}>
+      <mesh position={[0, 2.55, 0]} castShadow={castShadows} receiveShadow={castShadows}>
         <cylinderGeometry args={[0.42, 0.42, 0.72, 32]} />
         <meshStandardMaterial color={COLORS.skin} roughness={0.4} metalness={0.05} />
       </mesh>
-      <mesh position={[0, 2.9, 0]}>
+      <mesh position={[0, 2.9, 0]} castShadow={castShadows} receiveShadow={castShadows}>
         <sphereGeometry args={[0.42, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial color={COLORS.skin} roughness={0.4} metalness={0.05} />
       </mesh>
@@ -146,6 +147,13 @@ export function AbstractAvatar({ position = [0, 0, 0] }) {
       <Box args={[0.16, 0.04, 0.015]} position={[0, 2.47, 0.43]} color={COLORS.tee} roughness={0.3} />
 
       {/* ===== HAIR ===== */}
+      {/* Solid base dome first so there's full scalp coverage underneath
+          the puffs from every angle - no gaps at the back/sides even
+          where the sparse random puff placement below leaves space. */}
+      <mesh position={[0, 2.9, 0]} castShadow={castShadows} receiveShadow={castShadows}>
+        <sphereGeometry args={[0.428, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial color={COLORS.hair} roughness={0.7} />
+      </mesh>
       {useMemo(() => {
         const pieces = [];
         let s = 5;
@@ -177,9 +185,9 @@ export function AbstractAvatar({ position = [0, 0, 0] }) {
       </mesh>
 
       {/* ===== TORSO ===== */}
-      <mesh position={[0, 1.55, 0]}>
+      <mesh position={[0, 1.55, 0]} castShadow={castShadows} receiveShadow={castShadows}>
         <boxGeometry args={[0.95, 1.0, 0.55]} />
-        <meshStandardMaterial color={COLORS.jacket} roughness={0.4} metalness={0.1} />
+        <meshStandardMaterial color={COLORS.jacket} roughness={0.35} metalness={0.15} />
       </mesh>
       <Box args={[0.3, 0.35, 0.02]} position={[0, 1.85, 0.28]} color={COLORS.tee} roughness={0.4} />
       <Box args={[0.03, 0.9, 0.02]} position={[0, 1.5, 0.29]} color={COLORS.jacketShine} metalness={0.5} roughness={0.3} />
@@ -189,13 +197,13 @@ export function AbstractAvatar({ position = [0, 0, 0] }) {
       <Box args={[0.08, 0.13, 0.021]} position={[0.19, 1.62, 0.3]} color="#4A5A8A" roughness={0.4} />
 
       {/* ===== ARMS ===== */}
-      <mesh position={[-0.62, 1.55, 0]} rotation={[0, 0, 0.18]}>
+      <mesh position={[-0.62, 1.55, 0]} rotation={[0, 0, 0.18]} castShadow={castShadows} receiveShadow={castShadows}>
         <boxGeometry args={[0.26, 0.85, 0.32]} />
-        <meshStandardMaterial color={COLORS.jacket} roughness={0.4} metalness={0.1} />
+        <meshStandardMaterial color={COLORS.jacket} roughness={0.35} metalness={0.15} />
       </mesh>
-      <mesh position={[0.62, 1.55, 0]} rotation={[0, 0, -0.18]}>
+      <mesh position={[0.62, 1.55, 0]} rotation={[0, 0, -0.18]} castShadow={castShadows} receiveShadow={castShadows}>
         <boxGeometry args={[0.26, 0.85, 0.32]} />
-        <meshStandardMaterial color={COLORS.jacket} roughness={0.4} metalness={0.1} />
+        <meshStandardMaterial color={COLORS.jacket} roughness={0.35} metalness={0.15} />
       </mesh>
 
       {/* ===== HANDS ===== */}
@@ -209,17 +217,17 @@ export function AbstractAvatar({ position = [0, 0, 0] }) {
       </mesh>
 
       {/* ===== HIPS ===== */}
-      <mesh position={[0, 0.92, 0]}>
+      <mesh position={[0, 0.92, 0]} castShadow={castShadows} receiveShadow={castShadows}>
         <boxGeometry args={[0.85, 0.3, 0.5]} />
         <meshStandardMaterial color={COLORS.pants} roughness={0.5} metalness={0.05} />
       </mesh>
 
       {/* ===== LEGS ===== */}
-      <mesh position={[-0.22, 0.4, 0]}>
+      <mesh position={[-0.22, 0.4, 0]} castShadow={castShadows} receiveShadow={castShadows}>
         <boxGeometry args={[0.38, 0.85, 0.5]} />
         <meshStandardMaterial color={COLORS.pants} roughness={0.5} metalness={0.05} />
       </mesh>
-      <mesh position={[0.22, 0.4, 0]}>
+      <mesh position={[0.22, 0.4, 0]} castShadow={castShadows} receiveShadow={castShadows}>
         <boxGeometry args={[0.38, 0.85, 0.5]} />
         <meshStandardMaterial color={COLORS.pants} roughness={0.5} metalness={0.05} />
       </mesh>
@@ -230,6 +238,11 @@ export function AbstractAvatar({ position = [0, 0, 0] }) {
       {/* ===== FEET ===== */}
       <Box args={[0.38, 0.16, 0.6]} position={[-0.22, -0.08, 0.05]} color={COLORS.hair} roughness={0.5} />
       <Box args={[0.38, 0.16, 0.6]} position={[0.22, -0.08, 0.05]} color={COLORS.hair} roughness={0.5} />
+
+      {/* Soft grounding shadow beneath the feet - skipped on weaker GPUs */}
+      {castShadows && (
+        <ContactShadows position={[0, -0.16, 0]} opacity={0.5} scale={4} blur={2} far={1.2} frames={1} />
+      )}
     </group>
   );
 }

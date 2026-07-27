@@ -5,11 +5,8 @@ import * as THREE from 'three';
 import { theme, hex } from '../config/theme.js';
 import { content } from '../config/content.js';
 import { Connection } from './Connection.jsx';
-import { ProjectMarker } from './ProjectMarker.jsx';
-import { playHover } from '../audio/soundEngine.js';
+import { playHover, playClick } from '../audio/soundEngine.js';
 import { LAYERS } from './CameraPath.js';
-
-const projectsByLayer = (layerKey) => content.projects.filter(p => p.layer === layerKey);
 
 const GOLD = () => new THREE.Color(hex(theme.colors.accentPrimary));
 const AMBER = () => new THREE.Color(hex(theme.colors.accentSecondary));
@@ -44,20 +41,146 @@ function LayerDisc({ y, radius = 9 }) {
 }
 
 /* ---------------------------------------------------------------------------
- * LAYER 0 - SURFACE / PRODUCT: floating UI fragments
+ * LAYER 0 - SURFACE / PRODUCT: floating UI fragments, each sketching a
+ * different facet of the job - growth, marketing, ops, engineering,
+ * security - as a small glowing glyph instead of a blank panel.
  * ------------------------------------------------------------------------ */
-function ProductLayer({ onSelectProject }) {
+function GrowthIcon({ color, accent }) {
+  const heights = [0.12, 0.22, 0.34, 0.5];
+  return (
+    <group position={[0, -0.05, 0.03]}>
+      {heights.map((h, i) => (
+        <mesh key={i} position={[-0.24 + i * 0.16, h / 2 - 0.05, 0]}>
+          <boxGeometry args={[0.1, h, 0.02]} />
+          <meshBasicMaterial color={color} toneMapped={false} transparent opacity={0.85} />
+        </mesh>
+      ))}
+      <mesh position={[0.36, 0.3, 0]} rotation={[0, 0, -0.6]}>
+        <coneGeometry args={[0.05, 0.14, 3]} />
+        <meshBasicMaterial color={accent} toneMapped={false} />
+      </mesh>
+    </group>
+  );
+}
+
+function AdIcon({ color, accent }) {
+  return (
+    <group position={[0, 0, 0.03]}>
+      <mesh position={[-0.15, 0.06, 0]}>
+        <planeGeometry args={[0.3, 0.3]} />
+        <meshBasicMaterial color={color} wireframe toneMapped={false} transparent opacity={0.75} />
+      </mesh>
+      <mesh position={[0.16, 0.16, 0]}>
+        <boxGeometry args={[0.2, 0.03, 0.01]} />
+        <meshBasicMaterial color={color} toneMapped={false} transparent opacity={0.6} />
+      </mesh>
+      <mesh position={[0.16, 0.08, 0]}>
+        <boxGeometry args={[0.14, 0.03, 0.01]} />
+        <meshBasicMaterial color={color} toneMapped={false} transparent opacity={0.45} />
+      </mesh>
+      <mesh position={[0.02, -0.14, 0.01]} rotation={[0, 0, Math.PI / 8]}>
+        <octahedronGeometry args={[0.075, 0]} />
+        <meshBasicMaterial color={accent} toneMapped={false} />
+      </mesh>
+    </group>
+  );
+}
+
+function OpsIcon({ color }) {
+  const teeth = 8;
+  return (
+    <group position={[0, 0, 0.03]}>
+      <mesh>
+        <torusGeometry args={[0.16, 0.045, 8, 20]} />
+        <meshBasicMaterial color={color} toneMapped={false} transparent opacity={0.85} />
+      </mesh>
+      {Array.from({ length: teeth }, (_, i) => {
+        const a = (i / teeth) * Math.PI * 2;
+        return (
+          <mesh key={i} position={[Math.cos(a) * 0.22, Math.sin(a) * 0.22, 0]} rotation={[0, 0, a]}>
+            <boxGeometry args={[0.07, 0.05, 0.02]} />
+            <meshBasicMaterial color={color} toneMapped={false} />
+          </mesh>
+        );
+      })}
+      <mesh>
+        <circleGeometry args={[0.07, 16]} />
+        <meshBasicMaterial color={color} toneMapped={false} transparent opacity={0.3} />
+      </mesh>
+    </group>
+  );
+}
+
+function TechIcon({ color }) {
+  const offsets = [-0.08, 0, 0.08];
+  return (
+    <group position={[0, 0, 0.03]}>
+      <mesh>
+        <boxGeometry args={[0.26, 0.26, 0.02]} />
+        <meshBasicMaterial color={color} wireframe toneMapped={false} />
+      </mesh>
+      <mesh>
+        <planeGeometry args={[0.16, 0.16]} />
+        <meshBasicMaterial color={color} toneMapped={false} transparent opacity={0.25} />
+      </mesh>
+      {offsets.map((o, j) => (
+        <group key={j}>
+          <mesh position={[o, 0.17, 0]}><boxGeometry args={[0.02, 0.06, 0.01]} /><meshBasicMaterial color={color} toneMapped={false} /></mesh>
+          <mesh position={[o, -0.17, 0]}><boxGeometry args={[0.02, 0.06, 0.01]} /><meshBasicMaterial color={color} toneMapped={false} /></mesh>
+          <mesh position={[-0.17, o, 0]}><boxGeometry args={[0.06, 0.02, 0.01]} /><meshBasicMaterial color={color} toneMapped={false} /></mesh>
+          <mesh position={[0.17, o, 0]}><boxGeometry args={[0.06, 0.02, 0.01]} /><meshBasicMaterial color={color} toneMapped={false} /></mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+function SecurityIcon({ color, accent }) {
+  return (
+    <group position={[0, 0, 0.03]}>
+      <mesh position={[0, 0.07, 0]}>
+        <boxGeometry args={[0.26, 0.26, 0.02]} />
+        <meshBasicMaterial color={color} wireframe toneMapped={false} />
+      </mesh>
+      <mesh position={[0, -0.09, 0]} rotation={[0, 0, Math.PI]}>
+        <coneGeometry args={[0.13, 0.15, 3]} />
+        <meshBasicMaterial color={color} wireframe toneMapped={false} />
+      </mesh>
+      {/* checkmark */}
+      <mesh position={[-0.03, 0.03, 0.01]} rotation={[0, 0, -0.7]}>
+        <boxGeometry args={[0.025, 0.09, 0.01]} />
+        <meshBasicMaterial color={accent} toneMapped={false} />
+      </mesh>
+      <mesh position={[0.04, 0.05, 0.01]} rotation={[0, 0, 0.7]}>
+        <boxGeometry args={[0.025, 0.15, 0.01]} />
+        <meshBasicMaterial color={accent} toneMapped={false} />
+      </mesh>
+    </group>
+  );
+}
+
+const CARD_ICONS = {
+  growth: GrowthIcon,
+  ad: AdIcon,
+  ops: OpsIcon,
+  tech: TechIcon,
+  security: SecurityIcon,
+};
+
+function ProductLayer() {
   const groupRef = useRef();
-  const projects = useMemo(() => projectsByLayer('product'), []);
   const gold = useMemo(GOLD, []);
+  const amber = useMemo(AMBER, []);
   const deep = useMemo(DEEP, []);
 
   const cards = useMemo(() => {
     const r = seededRandom(11);
+    const types = ['growth', 'ad', 'ops', 'tech', 'security'];
     // Fewer cards, pushed back and to the sides so they frame the
     // avatar as ambient "product surface" texture, not foreground clutter.
     return Array.from({ length: 5 }, (_, i) => ({
       id: i,
+      type: types[i],
       position: [
         (r() > 0.5 ? 1 : -1) * (5 + r() * 4),   // pushed to the sides
         1 + r() * 4,
@@ -83,37 +206,30 @@ function ProductLayer({ onSelectProject }) {
   return (
     <group position={[0, LAYERS.surface, 0]}>
       <group ref={groupRef}>
-        {cards.map(card => (
-          <mesh key={card.id} position={card.position} scale={card.scale} rotation={[0, card.rotY, 0]}>
-            <boxGeometry args={[1, 1, 1]} />
-            <meshStandardMaterial
-              color={gold}
-              emissive={gold}
-              emissiveIntensity={0.25}
-              transparent
-              opacity={0.1}
-              toneMapped={false}
-            />
-          </mesh>
-        ))}
+        {cards.map(card => {
+          const Icon = CARD_ICONS[card.type];
+          return (
+            <group key={card.id} position={card.position} rotation={[0, card.rotY, 0]}>
+              <mesh scale={card.scale}>
+                <boxGeometry args={[1, 1, 1]} />
+                <meshStandardMaterial
+                  color={gold}
+                  emissive={gold}
+                  emissiveIntensity={0.25}
+                  transparent
+                  opacity={0.1}
+                  toneMapped={false}
+                />
+              </mesh>
+              <mesh scale={[card.scale[0] * 1.02, card.scale[1] * 1.02, card.scale[2] * 1.02]}>
+                <boxGeometry args={[1, 1, 1]} />
+                <meshBasicMaterial color={deep} wireframe transparent opacity={0.25} toneMapped={false} />
+              </mesh>
+              <Icon color={gold} accent={amber} />
+            </group>
+          );
+        })}
       </group>
-      {/* Faint wireframe outlines */}
-      {cards.map(card => (
-        <mesh key={`w${card.id}`} position={card.position} scale={card.scale} rotation={[0, card.rotY, 0]}>
-          <boxGeometry args={[1.02, 1.02, 1.02]} />
-          <meshBasicMaterial color={deep} wireframe transparent opacity={0.25} toneMapped={false} />
-        </mesh>
-      ))}
-
-      {/* Clickable project node(s) for this layer */}
-      {projects.map((p, i) => (
-        <ProjectMarker
-          key={p.id}
-          project={p}
-          position={[2.2 + i * 1.4, 1.9, 2.6]}
-          onSelect={onSelectProject}
-        />
-      ))}
     </group>
   );
 }
@@ -142,8 +258,7 @@ function RequestPulse({ from, to, speed, offset, color }) {
   );
 }
 
-function ApplicationLayer({ onSelectProject }) {
-  const projects = useMemo(() => projectsByLayer('application'), []);
+function ApplicationLayer() {
   const gold = useMemo(GOLD, []);
   const amber = useMemo(AMBER, []);
   const deep = useMemo(DEEP, []);
@@ -265,76 +380,148 @@ function ApplicationLayer({ onSelectProject }) {
       {requests.map(req => (
         <RequestPulse key={req.id} {...req} />
       ))}
-
-      {/* Clickable project node(s) for this layer */}
-      {projects.map((p, i) => (
-        <ProjectMarker
-          key={p.id}
-          project={p}
-          position={[-3 + i * 6, -0.5, 2.8]}
-          onSelect={onSelectProject}
-        />
-      ))}
     </group>
   );
 }
 
 /* ---------------------------------------------------------------------------
- * LAYER 2 - SERVER: glowing racks
+ * LAYER 2 - SERVER: glowing racks. Every real project lives here now, one
+ * per rack, since "servers" already reads as "the projects section" -
+ * no need for separate floating markers scattered across other layers.
  * ------------------------------------------------------------------------ */
-function ServerRack({ position, slots = 6, seed = 1 }) {
+const RACK_CTAS = ['PULL THIS RACK', 'SSH IN →', 'PATCH ME IN', 'SPIN ME UP', 'RACK IT UP'];
+
+// Maps rack index -> index into content.projects (or null for a plain
+// decorative rack). Rack 0 sits at the far left edge where it's easy to
+// miss, so workbrook moved to rack 5 on the right instead; everything
+// else stays on its original rack.
+const RACK_PROJECT_INDEX = [null, 1, 2, 3, 4, 0, null];
+
+function RackPointer({ rackH, project, hovered, cta }) {
+  const arrowRef = useRef();
+  const gold = useMemo(GOLD, []);
+
+  useFrame(({ clock }) => {
+    if (arrowRef.current) {
+      arrowRef.current.position.y = rackH + 0.55 + Math.sin(clock.elapsedTime * 2) * 0.08;
+    }
+  });
+
+  return (
+    <group>
+      {/* Downward-pointing pin, always visible so the rack reads as
+          clickable before anyone has hovered it */}
+      <mesh ref={arrowRef} position={[0, rackH + 0.55, 0]} rotation={[Math.PI, 0, 0]}>
+        <coneGeometry args={[0.09, 0.18, 4]} />
+        <meshBasicMaterial color={gold} toneMapped={false} transparent opacity={hovered ? 1 : 0.6} />
+      </mesh>
+      <Html center position={[0, rackH + 0.85, 0]} distanceFactor={8} style={{ pointerEvents: 'none' }}>
+        <div
+          style={{
+            background: hovered ? 'rgba(5,8,24,0.9)' : 'transparent',
+            border: hovered ? '1px solid rgba(255,193,69,0.5)' : 'none',
+            color: hovered ? '#FFF8E7' : 'rgba(255,193,69,0.75)',
+            fontSize: '10px',
+            fontFamily: 'monospace',
+            letterSpacing: '0.08em',
+            padding: hovered ? '5px 9px' : '0',
+            borderRadius: '2px',
+            whiteSpace: 'nowrap',
+            fontWeight: hovered ? 600 : 400,
+            transition: 'all 0.2s',
+          }}
+        >
+          {hovered ? project.title : cta}
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+function ServerRack({ position, slots = 6, seed = 1, project, cta, onSelect }) {
   const gold = useMemo(GOLD, []);
   const amber = useMemo(AMBER, []);
   const lightsRef = useRef([]);
+  const groupRef = useRef();
+  const [hovered, setHovered] = useState(false);
   const rng = useMemo(() => seededRandom(seed), [seed]);
   const blinkSpeeds = useMemo(() => Array.from({ length: slots }, () => 0.5 + rng() * 3), [slots, rng]);
+  const clickable = !!project;
 
-  useFrame(({ clock }) => {
+  const rackH = slots * 0.4 + 0.3;
+
+  useFrame(({ clock }, delta) => {
     lightsRef.current.forEach((mat, i) => {
       if (mat) {
         mat.opacity = 0.4 + Math.abs(Math.sin(clock.elapsedTime * blinkSpeeds[i] + i)) * 0.6;
       }
     });
+    if (groupRef.current && clickable) {
+      const target = hovered ? 1.08 : 1;
+      const smoothing = 1 - Math.pow(1 - 0.15, delta * 60);
+      groupRef.current.scale.lerp(new THREE.Vector3(target, target, target), smoothing);
+    }
   });
-
-  const rackH = slots * 0.4 + 0.3;
 
   return (
     <group position={position}>
-      {/* Rack frame */}
-      <mesh position={[0, rackH / 2, 0]}>
-        <boxGeometry args={[1.4, rackH, 1]} />
-        <meshStandardMaterial
-          color={hex(theme.colors.bgLight)}
-          emissive={gold}
-          emissiveIntensity={0.05}
-          transparent
-          opacity={0.75}
-        />
-      </mesh>
-      <mesh position={[0, rackH / 2, 0]}>
-        <boxGeometry args={[1.45, rackH + 0.05, 1.05]} />
-        <meshBasicMaterial color={gold} wireframe transparent opacity={0.3} toneMapped={false} />
-      </mesh>
-      {/* Slot lights */}
-      {Array.from({ length: slots }, (_, i) => (
-        <mesh key={i} position={[0.45, 0.35 + i * 0.4, 0.51]}>
-          <planeGeometry args={[0.35, 0.08]} />
-          <meshBasicMaterial
-            ref={el => (lightsRef.current[i] = el)}
-            color={i % 3 === 0 ? amber : gold}
+      <group
+        ref={groupRef}
+        onPointerOver={clickable ? (e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; playHover(); } : undefined}
+        onPointerOut={clickable ? (e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; } : undefined}
+        onClick={clickable ? (e) => { e.stopPropagation(); playClick(); onSelect(project); } : undefined}
+      >
+        {/* Rack frame */}
+        <mesh position={[0, rackH / 2, 0]}>
+          <boxGeometry args={[1.4, rackH, 1]} />
+          <meshStandardMaterial
+            color={hex(theme.colors.bgLight)}
+            emissive={gold}
+            emissiveIntensity={clickable && hovered ? 0.3 : 0.05}
+            metalness={0.4}
+            roughness={0.35}
             transparent
-            opacity={0.7}
+            opacity={0.75}
+          />
+        </mesh>
+        <mesh position={[0, rackH / 2, 0]}>
+          <boxGeometry args={[1.45, rackH + 0.05, 1.05]} />
+          <meshBasicMaterial
+            color={gold}
+            wireframe
+            transparent
+            opacity={clickable ? (hovered ? 0.9 : 0.5) : 0.3}
             toneMapped={false}
           />
         </mesh>
-      ))}
+        {/* Slot lights */}
+        {Array.from({ length: slots }, (_, i) => (
+          <mesh key={i} position={[0.45, 0.35 + i * 0.4, 0.51]}>
+            <planeGeometry args={[0.35, 0.08]} />
+            <meshBasicMaterial
+              ref={el => (lightsRef.current[i] = el)}
+              color={i % 3 === 0 ? amber : gold}
+              transparent
+              opacity={0.7}
+              toneMapped={false}
+            />
+          </mesh>
+        ))}
+        {/* Wider invisible hit box - forgiving click target beyond the frame */}
+        {clickable && (
+          <mesh position={[0, rackH / 2, 0]} visible={false}>
+            <boxGeometry args={[1.9, rackH + 0.6, 1.5]} />
+            <meshBasicMaterial transparent opacity={0} />
+          </mesh>
+        )}
+      </group>
+
+      {clickable && <RackPointer rackH={rackH} project={project} hovered={hovered} cta={cta} />}
     </group>
   );
 }
 
 function ServerLayer({ onSelectProject }) {
-  const projects = useMemo(() => projectsByLayer('server'), []);
   const racks = useMemo(() => {
     const r = seededRandom(31);
     return Array.from({ length: 7 }, (_, i) => ({
@@ -352,19 +539,20 @@ function ServerLayer({ onSelectProject }) {
   return (
     <group position={[0, LAYERS.server, 0]}>
       <LayerDisc y={0} radius={9} />
-      {racks.map(rack => (
-        <ServerRack key={rack.id} position={rack.position} slots={rack.slots} seed={rack.seed} />
-      ))}
-
-      {/* Clickable project node(s) for this layer */}
-      {projects.map((p, i) => (
-        <ProjectMarker
-          key={p.id}
-          project={p}
-          position={[0 + i * 2, 2.6, 3]}
-          onSelect={onSelectProject}
-        />
-      ))}
+      {racks.map((rack, i) => {
+        const pIdx = RACK_PROJECT_INDEX[i];
+        return (
+          <ServerRack
+            key={rack.id}
+            position={rack.position}
+            slots={rack.slots}
+            seed={rack.seed}
+            project={pIdx == null ? undefined : content.projects[pIdx]}
+            cta={pIdx == null ? undefined : RACK_CTAS[pIdx % RACK_CTAS.length]}
+            onSelect={onSelectProject}
+          />
+        );
+      })}
     </group>
   );
 }
@@ -452,9 +640,7 @@ function ClusterLabel({ position, label }) {
   );
 }
 
-function NetworkLayer({ onSelectProject }) {
-  const projects = useMemo(() => projectsByLayer('network'), []);
-
+function NetworkLayer() {
   // One spatial cluster per skill group, arranged around a ring so
   // each category reads as a distinct constellation.
   const clusters = useMemo(() => {
@@ -528,16 +714,6 @@ function NetworkLayer({ onSelectProject }) {
       {backbone.map(link => (
         <Connection key={link.id} {...link} />
       ))}
-
-      {/* Clickable project node(s) for this layer */}
-      {projects.map((p, i) => (
-        <ProjectMarker
-          key={p.id}
-          project={p}
-          position={[0 + i * 2, 3, 3]}
-          onSelect={onSelectProject}
-        />
-      ))}
     </group>
   );
 }
@@ -545,9 +721,13 @@ function NetworkLayer({ onSelectProject }) {
 /* ---------------------------------------------------------------------------
  * LAYER 4 - BARE METAL: circuit floor
  * ------------------------------------------------------------------------ */
-function MetalLayer() {
+function MetalLayer({ gpuTier = 3 }) {
   const gold = useMemo(GOLD, []);
   const amber = useMemo(AMBER, []);
+  // Weaker GPUs are mostly phones, where the overlay text has far less
+  // side margin and sits right on top of this glow instead of beside
+  // it - dim the whole floor down rather than just the core.
+  const dim = gpuTier >= 3 ? 1 : 0.55;
 
   // Circuit traces: L-shaped glowing paths on the floor
   const traces = useMemo(() => {
@@ -574,7 +754,7 @@ function MetalLayer() {
     traceMats.current.forEach((mat, i) => {
       if (mat) {
         const tr = traces[i];
-        mat.opacity = 0.3 + Math.abs(Math.sin(clock.elapsedTime * tr.pulseSpeed + tr.pulseOffset)) * 0.5;
+        mat.opacity = (0.3 + Math.abs(Math.sin(clock.elapsedTime * tr.pulseSpeed + tr.pulseOffset)) * 0.5) * dim;
       }
     });
   });
@@ -594,7 +774,7 @@ function MetalLayer() {
             ref={el => (traceMats.current[i] = el)}
             color={i % 4 === 0 ? amber : gold}
             transparent
-            opacity={0.5}
+            opacity={0.5 * dim}
             toneMapped={false}
           />
         </mesh>
@@ -605,8 +785,9 @@ function MetalLayer() {
         <meshStandardMaterial
           color={gold}
           emissive={gold}
-          emissiveIntensity={2}
-          toneMapped={false}
+          emissiveIntensity={0.9 * dim}
+          metalness={0.3}
+          roughness={0.35}
         />
       </mesh>
     </group>
@@ -616,14 +797,14 @@ function MetalLayer() {
 /* ---------------------------------------------------------------------------
  * Export the full stack
  * ------------------------------------------------------------------------ */
-export function StackLayers({ onSelectProject }) {
+export function StackLayers({ onSelectProject, gpuTier = 3 }) {
   return (
     <group>
-      <ProductLayer onSelectProject={onSelectProject} />
-      <ApplicationLayer onSelectProject={onSelectProject} />
+      <ProductLayer />
+      <ApplicationLayer />
       <ServerLayer onSelectProject={onSelectProject} />
-      <NetworkLayer onSelectProject={onSelectProject} />
-      <MetalLayer />
+      <NetworkLayer />
+      <MetalLayer gpuTier={gpuTier} />
     </group>
   );
 }

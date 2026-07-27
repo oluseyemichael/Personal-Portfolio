@@ -13,31 +13,32 @@ function hasWebGL() {
   }
 }
 
+/**
+ * The 2D fallback is a true fallback now, not a blanket "mobile" rule:
+ * a phone with no WebGL support gets it immediately, and a phone with
+ * a weak GPU (tier 0-1, detected async below) gets it once that's known.
+ * Viewport width alone no longer forces it - capable phones get the
+ * real 3D scene, just with effects dialed down per gpuTier.
+ */
 function computeIsMobile() {
-  return window.innerWidth < 768 || !hasWebGL();
+  return !hasWebGL();
 }
 
 /**
  * Drives routing between the 3D Scene and the 2D fallback, plus how
  * hard the 3D scene is allowed to push the GPU.
  *
- * `isMobile` starts from a synchronous viewport/WebGL check (no flash).
+ * `isMobile` starts from a synchronous WebGL check (no flash).
  * `detect-gpu`'s tier classification resolves shortly after and can
  * only make things more conservative: a weak GPU (tier 0-1) forces
- * the 2D fallback even on a wide desktop viewport, and tier 2 dials
- * bloom/particles down instead of running full effects.
+ * the 2D fallback, and tier 2 dials bloom/particles/shadows down
+ * instead of running full effects.
  */
 export function useDeviceCapability() {
   const [state, setState] = useState(() => ({
     isMobile: typeof window === 'undefined' ? false : computeIsMobile(),
     gpuTier: 3,
   }));
-
-  useEffect(() => {
-    const update = () => setState((s) => ({ ...s, isMobile: s.isMobile || computeIsMobile() }));
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
