@@ -62,19 +62,58 @@ export function ProjectDetail({ project, onClose }) {
             </h3>
             <p className="font-body text-sm text-cream/50 mb-8">{displayProject.subtitle}</p>
 
-            <p className="font-body text-base text-cream/70 leading-relaxed mb-8">
+            <div className="flex flex-wrap gap-3 mb-8">
+              {displayProject.liveUrl && (
+                <a
+                  href={displayProject.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-400 text-slate-950 font-mono text-xs font-bold hover:bg-amber-300 transition-all shadow-lg shadow-amber-400/20"
+                >
+                  <span>VISIT LIVE SITE</span>
+                  <span>&rarr;</span>
+                </a>
+              )}
+            </div>
+
+            <p className="font-body text-base text-cream/80 leading-relaxed mb-8">
               {displayProject.description}
             </p>
 
+            {/* Screenshots Gallery with IP Confidentiality Badge */}
+            {displayProject.images && displayProject.images.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-mono text-[10px] text-amber-400/90 tracking-[0.25em] uppercase">
+                    INTERFACE SNAPSHOTS
+                  </p>
+                  <span className="font-mono text-[9px] text-slate-400 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                    CONFIDENTIAL PREVIEW
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  {displayProject.images.map((imgUrl, idx) => (
+                    <div key={idx} className="relative rounded-xl overflow-hidden border border-white/15 shadow-2xl group">
+                      <img src={imgUrl} alt={`${displayProject.title} preview ${idx + 1}`} className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 pointer-events-none" />
+                      <div className="absolute bottom-2.5 left-3 font-mono text-[9px] text-amber-300/90 bg-slate-950/80 px-2 py-0.5 rounded border border-amber-400/30">
+                        {idx === 0 ? 'Billing & Reports Module' : 'Drug & Pharmacy Catalogue'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="mb-8">
               <p className="font-mono text-[10px] text-cream/40 tracking-[0.25em] uppercase mb-3">
-                Tech
+                Tech Stack & Competencies
               </p>
               <div className="flex flex-wrap gap-2">
                 {displayProject.tech.map((t) => (
                   <span
                     key={t}
-                    className="font-mono text-[11px] text-cream/70 border border-cream/15 rounded-full px-3 py-1"
+                    className="font-mono text-[11px] text-cream/80 border border-cream/20 rounded-full px-3 py-1 bg-white/5"
                   >
                     {t}
                   </span>
@@ -83,7 +122,7 @@ export function ProjectDetail({ project, onClose }) {
             </div>
 
             <div className="border-t border-cream/10 pt-6">
-              <p className="font-body text-sm italic text-gold-400/90">{displayProject.highlight}</p>
+              <p className="font-body text-sm italic text-amber-400/90">{displayProject.highlight}</p>
             </div>
           </>
         )}

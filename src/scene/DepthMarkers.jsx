@@ -55,7 +55,7 @@ function Marker({ y, depth, label }) {
 
 export function DepthMarkers() {
   return (
-    <group>
+    <group raycast={() => null}>
       {MARKERS.map(m => (
         <Marker key={m.label} {...m} />
       ))}

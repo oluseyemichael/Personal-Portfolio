@@ -32,7 +32,7 @@ export function Particles({ count = theme.scene.particleCount }) {
   });
 
   return (
-    <points ref={pointsRef}>
+    <points ref={pointsRef} raycast={() => null}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"

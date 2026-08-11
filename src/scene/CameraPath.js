@@ -25,9 +25,9 @@ export const cameraWaypoints = [
   { position: [4, -9.5, 6],    lookAt: [0, -12, 0] },
   { position: [2, -15, 6],     lookAt: [-1, -19, 0] },
 
-  // Descend to WORK (server layer)
-  { position: [-3.5, -21.5, 6.5], lookAt: [0, -24, 0] },
-  { position: [-4, -28, 6],    lookAt: [0, -31, 0] },
+  // Descend to WORK (server layer) - wide perspective framing server rack array
+  { position: [0, -21.8, 8.5], lookAt: [0, -24, 0] },
+  { position: [-2, -28, 6.5],   lookAt: [0, -31, 0] },
 
   // Descend to SKILLS (network layer)
   { position: [0, -33.5, 7],   lookAt: [0, -36, 0] },

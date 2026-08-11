@@ -36,7 +36,7 @@ export function Connection({ from, to, thickness = 0.02, flowSpeed = 0.5, offset
   });
 
   return (
-    <mesh ref={meshRef} position={position} quaternion={quaternion}>
+    <mesh ref={meshRef} position={position} quaternion={quaternion} raycast={() => null}>
       <cylinderGeometry args={[thickness, thickness, length, 6, 1, true]} />
       <meshBasicMaterial
         ref={materialRef}

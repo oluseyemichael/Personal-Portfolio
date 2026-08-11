@@ -27,7 +27,7 @@ function seededRandom(seed) {
 function LayerDisc({ y, radius = 9 }) {
   const color = useMemo(GOLD, []);
   return (
-    <group position={[0, y, 0]}>
+    <group position={[0, y, 0]} raycast={() => null}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
         <ringGeometry args={[radius - 0.05, radius, 64]} />
         <meshBasicMaterial color={color} transparent opacity={0.25} side={THREE.DoubleSide} toneMapped={false} />
@@ -41,22 +41,20 @@ function LayerDisc({ y, radius = 9 }) {
 }
 
 /* ---------------------------------------------------------------------------
- * LAYER 0 - SURFACE / PRODUCT: floating UI fragments, each sketching a
- * different facet of the job - growth, marketing, ops, engineering,
- * security - as a small glowing glyph instead of a blank panel.
+ * LAYER 0 - SURFACE / PRODUCT: floating glass UI panels with metallic trims
  * ------------------------------------------------------------------------ */
 function GrowthIcon({ color, accent }) {
   const heights = [0.12, 0.22, 0.34, 0.5];
   return (
-    <group position={[0, -0.05, 0.03]}>
+    <group position={[0, -0.05, 0.05]}>
       {heights.map((h, i) => (
         <mesh key={i} position={[-0.24 + i * 0.16, h / 2 - 0.05, 0]}>
           <boxGeometry args={[0.1, h, 0.02]} />
-          <meshBasicMaterial color={color} toneMapped={false} transparent opacity={0.85} />
+          <meshBasicMaterial color={color} toneMapped={false} transparent opacity={0.9} />
         </mesh>
       ))}
       <mesh position={[0.36, 0.3, 0]} rotation={[0, 0, -0.6]}>
-        <coneGeometry args={[0.05, 0.14, 3]} />
+        <coneGeometry args={[0.05, 0.14, 4]} />
         <meshBasicMaterial color={accent} toneMapped={false} />
       </mesh>
     </group>
@@ -65,7 +63,7 @@ function GrowthIcon({ color, accent }) {
 
 function AdIcon({ color, accent }) {
   return (
-    <group position={[0, 0, 0.03]}>
+    <group position={[0, 0, 0.05]}>
       <mesh position={[-0.15, 0.06, 0]}>
         <planeGeometry args={[0.3, 0.3]} />
         <meshBasicMaterial color={color} wireframe toneMapped={false} transparent opacity={0.75} />
@@ -89,9 +87,9 @@ function AdIcon({ color, accent }) {
 function OpsIcon({ color }) {
   const teeth = 8;
   return (
-    <group position={[0, 0, 0.03]}>
+    <group position={[0, 0, 0.05]}>
       <mesh>
-        <torusGeometry args={[0.16, 0.045, 8, 20]} />
+        <torusGeometry args={[0.16, 0.045, 12, 24]} />
         <meshBasicMaterial color={color} toneMapped={false} transparent opacity={0.85} />
       </mesh>
       {Array.from({ length: teeth }, (_, i) => {
@@ -103,10 +101,6 @@ function OpsIcon({ color }) {
           </mesh>
         );
       })}
-      <mesh>
-        <circleGeometry args={[0.07, 16]} />
-        <meshBasicMaterial color={color} toneMapped={false} transparent opacity={0.3} />
-      </mesh>
     </group>
   );
 }
@@ -114,21 +108,15 @@ function OpsIcon({ color }) {
 function TechIcon({ color }) {
   const offsets = [-0.08, 0, 0.08];
   return (
-    <group position={[0, 0, 0.03]}>
+    <group position={[0, 0, 0.05]}>
       <mesh>
         <boxGeometry args={[0.26, 0.26, 0.02]} />
         <meshBasicMaterial color={color} wireframe toneMapped={false} />
-      </mesh>
-      <mesh>
-        <planeGeometry args={[0.16, 0.16]} />
-        <meshBasicMaterial color={color} toneMapped={false} transparent opacity={0.25} />
       </mesh>
       {offsets.map((o, j) => (
         <group key={j}>
           <mesh position={[o, 0.17, 0]}><boxGeometry args={[0.02, 0.06, 0.01]} /><meshBasicMaterial color={color} toneMapped={false} /></mesh>
           <mesh position={[o, -0.17, 0]}><boxGeometry args={[0.02, 0.06, 0.01]} /><meshBasicMaterial color={color} toneMapped={false} /></mesh>
-          <mesh position={[-0.17, o, 0]}><boxGeometry args={[0.06, 0.02, 0.01]} /><meshBasicMaterial color={color} toneMapped={false} /></mesh>
-          <mesh position={[0.17, o, 0]}><boxGeometry args={[0.06, 0.02, 0.01]} /><meshBasicMaterial color={color} toneMapped={false} /></mesh>
         </group>
       ))}
     </group>
@@ -137,7 +125,7 @@ function TechIcon({ color }) {
 
 function SecurityIcon({ color, accent }) {
   return (
-    <group position={[0, 0, 0.03]}>
+    <group position={[0, 0, 0.05]}>
       <mesh position={[0, 0.07, 0]}>
         <boxGeometry args={[0.26, 0.26, 0.02]} />
         <meshBasicMaterial color={color} wireframe toneMapped={false} />
@@ -145,15 +133,6 @@ function SecurityIcon({ color, accent }) {
       <mesh position={[0, -0.09, 0]} rotation={[0, 0, Math.PI]}>
         <coneGeometry args={[0.13, 0.15, 3]} />
         <meshBasicMaterial color={color} wireframe toneMapped={false} />
-      </mesh>
-      {/* checkmark */}
-      <mesh position={[-0.03, 0.03, 0.01]} rotation={[0, 0, -0.7]}>
-        <boxGeometry args={[0.025, 0.09, 0.01]} />
-        <meshBasicMaterial color={accent} toneMapped={false} />
-      </mesh>
-      <mesh position={[0.04, 0.05, 0.01]} rotation={[0, 0, 0.7]}>
-        <boxGeometry args={[0.025, 0.15, 0.01]} />
-        <meshBasicMaterial color={accent} toneMapped={false} />
       </mesh>
     </group>
   );
@@ -171,22 +150,19 @@ function ProductLayer() {
   const groupRef = useRef();
   const gold = useMemo(GOLD, []);
   const amber = useMemo(AMBER, []);
-  const deep = useMemo(DEEP, []);
 
   const cards = useMemo(() => {
     const r = seededRandom(11);
     const types = ['growth', 'ad', 'ops', 'tech', 'security'];
-    // Fewer cards, pushed back and to the sides so they frame the
-    // avatar as ambient "product surface" texture, not foreground clutter.
     return Array.from({ length: 5 }, (_, i) => ({
       id: i,
       type: types[i],
       position: [
-        (r() > 0.5 ? 1 : -1) * (5 + r() * 4),   // pushed to the sides
+        (r() > 0.5 ? 1 : -1) * (5 + r() * 4),
         1 + r() * 4,
-        -6 - r() * 5,                             // pushed well back
+        -6 - r() * 5,
       ],
-      scale: [1 + r() * 1.2, 0.7 + r() * 0.6, 0.04],
+      scale: [1.2 + r() * 1.2, 0.8 + r() * 0.6, 0.05],
       rotY: (r() - 0.5) * 0.6,
       floatSpeed: 0.25 + r() * 0.4,
       floatOffset: r() * Math.PI * 2,
@@ -204,26 +180,38 @@ function ProductLayer() {
   });
 
   return (
-    <group position={[0, LAYERS.surface, 0]}>
+    <group position={[0, LAYERS.surface, 0]} raycast={() => null}>
       <group ref={groupRef}>
         {cards.map(card => {
           const Icon = CARD_ICONS[card.type];
           return (
             <group key={card.id} position={card.position} rotation={[0, card.rotY, 0]}>
+              {/* Glass PBR Panel */}
               <mesh scale={card.scale}>
+                <boxGeometry args={[1, 1, 1]} />
+                <meshPhysicalMaterial
+                  color={hex('#0F172A')}
+                  metalness={0.1}
+                  roughness={0.1}
+                  transmission={0.85}
+                  thickness={0.5}
+                  clearcoat={1.0}
+                  clearcoatRoughness={0.1}
+                  transparent
+                  opacity={0.8}
+                />
+              </mesh>
+              {/* Sleek Rim Border */}
+              <mesh scale={[card.scale[0] * 1.02, card.scale[1] * 1.02, card.scale[2] * 1.02]}>
                 <boxGeometry args={[1, 1, 1]} />
                 <meshStandardMaterial
                   color={gold}
-                  emissive={gold}
-                  emissiveIntensity={0.25}
+                  metalness={0.8}
+                  roughness={0.2}
+                  wireframe
                   transparent
-                  opacity={0.1}
-                  toneMapped={false}
+                  opacity={0.35}
                 />
-              </mesh>
-              <mesh scale={[card.scale[0] * 1.02, card.scale[1] * 1.02, card.scale[2] * 1.02]}>
-                <boxGeometry args={[1, 1, 1]} />
-                <meshBasicMaterial color={deep} wireframe transparent opacity={0.25} toneMapped={false} />
               </mesh>
               <Icon color={gold} accent={amber} />
             </group>
@@ -235,7 +223,7 @@ function ProductLayer() {
 }
 
 /* ---------------------------------------------------------------------------
- * LAYER 1 - APPLICATION: living code - brackets, blocks, request pulses
+ * LAYER 1 - APPLICATION: living code blocks & PBR acrylic panels
  * ------------------------------------------------------------------------ */
 function RequestPulse({ from, to, speed, offset, color }) {
   const ref = useRef();
@@ -252,7 +240,7 @@ function RequestPulse({ from, to, speed, offset, color }) {
 
   return (
     <mesh ref={ref}>
-      <sphereGeometry args={[0.08, 8, 8]} />
+      <sphereGeometry args={[0.08, 12, 12]} />
       <meshBasicMaterial color={color} toneMapped={false} />
     </mesh>
   );
@@ -261,10 +249,8 @@ function RequestPulse({ from, to, speed, offset, color }) {
 function ApplicationLayer() {
   const gold = useMemo(GOLD, []);
   const amber = useMemo(AMBER, []);
-  const deep = useMemo(DEEP, []);
-  const cream = useMemo(() => new THREE.Color(hex('#FFF8E7')), []);
+  const cyan = useMemo(() => new THREE.Color(hex('#38BDF8')), []);
 
-  // Function blocks the code "runs" between
   const blocks = useMemo(() => {
     const r = seededRandom(23);
     return Array.from({ length: 8 }, (_, i) => ({
@@ -274,13 +260,12 @@ function ApplicationLayer() {
         (r() - 0.3) * 5,
         (r() - 0.5) * 8 - 1,
       ],
-      w: 0.8 + r() * 1.4,
-      h: 0.4 + r() * 0.5,
+      w: 0.9 + r() * 1.4,
+      h: 0.5 + r() * 0.5,
       rotSpeed: (r() - 0.5) * 0.15,
     }));
   }, []);
 
-  // Request/response pulses travel between random block pairs
   const requests = useMemo(() => {
     const r = seededRandom(77);
     const reqs = [];
@@ -294,21 +279,20 @@ function ApplicationLayer() {
           to: b.position,
           speed: 0.2 + r() * 0.3,
           offset: r(),
-          color: r() > 0.5 ? cream : amber,
+          color: r() > 0.5 ? cyan : amber,
         });
       }
     }
     return reqs;
-  }, [blocks, cream, amber]);
+  }, [blocks, cyan, amber]);
 
-  // Floating bracket glyphs
   const brackets = useMemo(() => {
     const r = seededRandom(91);
     return Array.from({ length: 12 }, (_, i) => ({
       id: i,
       position: [(r() - 0.5) * 14, (r() - 0.3) * 6, (r() - 0.5) * 9 - 1],
       char: ['{', '}', '<', '>', '/', '[', ']'][Math.floor(r() * 7)],
-      size: 0.3 + r() * 0.4,
+      size: 0.35 + r() * 0.4,
       floatSpeed: 0.3 + r() * 0.5,
       floatOffset: r() * Math.PI * 2,
     }));
@@ -332,29 +316,37 @@ function ApplicationLayer() {
   });
 
   return (
-    <group position={[0, LAYERS.application, 0]}>
+    <group position={[0, LAYERS.application, 0]} raycast={() => null}>
       <LayerDisc y={0} radius={8.5} />
 
-      {/* Function blocks (flat panels like code windows) */}
+      {/* Function blocks */}
       <group ref={blocksRef}>
         {blocks.map(b => (
           <group key={b.id} position={b.position}>
+            {/* Acrylic dark frame */}
             <mesh>
-              <boxGeometry args={[b.w, b.h, 0.06]} />
-              <meshStandardMaterial color={gold} emissive={gold} emissiveIntensity={0.4} transparent opacity={0.18} toneMapped={false} />
+              <boxGeometry args={[b.w, b.h, 0.08]} />
+              <meshPhysicalMaterial
+                color={hex('#090D1F')}
+                metalness={0.2}
+                roughness={0.2}
+                clearcoat={0.8}
+                transparent
+                opacity={0.85}
+              />
             </mesh>
             <mesh>
-              <boxGeometry args={[b.w + 0.02, b.h + 0.02, 0.05]} />
-              <meshBasicMaterial color={deep} wireframe transparent opacity={0.6} toneMapped={false} />
+              <boxGeometry args={[b.w + 0.02, b.h + 0.02, 0.07]} />
+              <meshStandardMaterial color={cyan} wireframe transparent opacity={0.35} />
             </mesh>
-            {/* Code lines inside the block */}
-            <mesh position={[0, b.h * 0.2, 0.04]}>
+            {/* Code lines */}
+            <mesh position={[0, b.h * 0.2, 0.05]}>
               <boxGeometry args={[b.w * 0.6, 0.03, 0.01]} />
-              <meshBasicMaterial color={amber} transparent opacity={0.7} toneMapped={false} />
+              <meshBasicMaterial color={amber} transparent opacity={0.8} toneMapped={false} />
             </mesh>
-            <mesh position={[-b.w * 0.1, 0, 0.04]}>
+            <mesh position={[-b.w * 0.1, 0, 0.05]}>
               <boxGeometry args={[b.w * 0.4, 0.03, 0.01]} />
-              <meshBasicMaterial color={amber} transparent opacity={0.5} toneMapped={false} />
+              <meshBasicMaterial color={cyan} transparent opacity={0.6} toneMapped={false} />
             </mesh>
           </group>
         ))}
@@ -367,7 +359,7 @@ function ApplicationLayer() {
             key={b.id}
             position={b.position}
             fontSize={b.size}
-            color={hex(theme.colors.accentPrimary)}
+            color={hex('#38BDF8')}
             anchorX="center"
             anchorY="middle"
           >
@@ -376,7 +368,7 @@ function ApplicationLayer() {
         ))}
       </group>
 
-      {/* Request/response pulses */}
+      {/* Request pulses */}
       {requests.map(req => (
         <RequestPulse key={req.id} {...req} />
       ))}
@@ -385,236 +377,390 @@ function ApplicationLayer() {
 }
 
 /* ---------------------------------------------------------------------------
- * LAYER 2 - SERVER: glowing racks. Every real project lives here now, one
- * per rack, since "servers" already reads as "the projects section" -
- * no need for separate floating markers scattered across other layers.
+ * LAYER 2 - SERVER: One big realistic server rack cabinet.
+ * Each project is a rack unit (switch) stacked vertically.
+ * All front panels face the camera at the same z — zero raycasting issues.
  * ------------------------------------------------------------------------ */
-const RACK_CTAS = ['PULL THIS RACK', 'SSH IN →', 'PATCH ME IN', 'SPIN ME UP', 'RACK IT UP'];
 
-// Maps rack index -> index into content.projects (or null for a plain
-// decorative rack). Rack 0 sits at the far left edge where it's easy to
-// miss, so workbrook moved to rack 5 on the right instead; everything
-// else stays on its original rack.
-const RACK_PROJECT_INDEX = [null, 1, 2, 3, 4, 0, null];
-
-function RackPointer({ rackH, project, hovered, cta }) {
-  const arrowRef = useRef();
+/* --- Individual clickable project rack unit (switch/server) --- */
+function ProjectUnit({ yPos, project, index, onSelect }) {
   const gold = useMemo(GOLD, []);
+  const amber = useMemo(AMBER, []);
+  const green = useMemo(() => new THREE.Color(hex('#10B981')), []);
+  const cyan = useMemo(() => new THREE.Color(hex('#06B6D4')), []);
+  const [hovered, setHovered] = useState(false);
+  const ledRefs = useRef([]);
+  const UNIT_W = 3.6;
+  const UNIT_H = 0.55;
+
+  // LED colors per project slot
+  const ledColors = useMemo(() => [green, amber, cyan, green], [green, amber, cyan]);
 
   useFrame(({ clock }) => {
-    if (arrowRef.current) {
-      arrowRef.current.position.y = rackH + 0.55 + Math.sin(clock.elapsedTime * 2) * 0.08;
-    }
+    ledRefs.current.forEach((mat, i) => {
+      if (mat) {
+        mat.opacity = 0.5 + Math.abs(Math.sin(clock.elapsedTime * (1.2 + i * 0.7) + index * 2 + i)) * 0.5;
+      }
+    });
   });
 
   return (
-    <group>
-      {/* Downward-pointing pin, always visible so the rack reads as
-          clickable before anyone has hovered it */}
-      <mesh ref={arrowRef} position={[0, rackH + 0.55, 0]} rotation={[Math.PI, 0, 0]}>
-        <coneGeometry args={[0.09, 0.18, 4]} />
-        <meshBasicMaterial color={gold} toneMapped={false} transparent opacity={hovered ? 1 : 0.6} />
+    <group position={[0, yPos, 0]} raycast={() => null}>
+      {/* SINGLE front-panel mesh */}
+      <mesh position={[0, 0, 0.58]} raycast={() => null}>
+        <boxGeometry args={[UNIT_W - 0.2, UNIT_H, 0.16]} />
+        <meshPhysicalMaterial
+          color={hovered ? hex('#1a2744') : hex('#0d1528')}
+          metalness={0.88}
+          roughness={0.15}
+          clearcoat={0.6}
+          emissive={gold}
+          emissiveIntensity={hovered ? 0.25 : 0.02}
+        />
       </mesh>
-      <Html center position={[0, rackH + 0.85, 0]} distanceFactor={8} style={{ pointerEvents: 'none' }}>
-        <div
-          style={{
-            background: hovered ? 'rgba(5,8,24,0.9)' : 'transparent',
-            border: hovered ? '1px solid rgba(255,193,69,0.5)' : 'none',
-            color: hovered ? '#FFF8E7' : 'rgba(255,193,69,0.75)',
-            fontSize: '10px',
-            fontFamily: 'monospace',
-            letterSpacing: '0.08em',
-            padding: hovered ? '5px 9px' : '0',
-            borderRadius: '2px',
-            whiteSpace: 'nowrap',
-            fontWeight: hovered ? 600 : 400,
-            transition: 'all 0.2s',
-          }}
+
+      {/* Subtle ambient light on hover */}
+      <pointLight position={[0, 0, 1.5]} color={gold} intensity={hovered ? 1.2 : 0} distance={3} />
+
+      {/* Left handle/latch */}
+      <mesh position={[-UNIT_W / 2 + 0.22, 0, 0.62]} raycast={() => null}>
+        <boxGeometry args={[0.06, UNIT_H * 0.7, 0.04]} />
+        <meshStandardMaterial
+          color={hovered ? gold : hex('#94A3B8')}
+          metalness={0.95}
+          roughness={0.1}
+          emissive={gold}
+          emissiveIntensity={hovered ? 0.2 : 0}
+        />
+      </mesh>
+
+      {/* Right handle/latch */}
+      <mesh position={[UNIT_W / 2 - 0.22, 0, 0.62]} raycast={() => null}>
+        <boxGeometry args={[0.06, UNIT_H * 0.7, 0.04]} />
+        <meshStandardMaterial
+          color={hovered ? gold : hex('#94A3B8')}
+          metalness={0.95}
+          roughness={0.1}
+          emissive={gold}
+          emissiveIntensity={hovered ? 0.2 : 0}
+        />
+      </mesh>
+
+      {/* LED status lights — blinking */}
+      {ledColors.map((color, j) => (
+        <mesh key={j} position={[UNIT_W / 2 - 0.55 - j * 0.15, 0.12, 0.62]} raycast={() => null}>
+          <boxGeometry args={[0.07, 0.04, 0.01]} />
+          <meshBasicMaterial
+            ref={el => (ledRefs.current[j] = el)}
+            color={color}
+            transparent
+            opacity={0.8}
+            toneMapped={false}
+          />
+        </mesh>
+      ))}
+
+      {/* Horizontal ventilation lines */}
+      {[-0.12, 0, 0.12].map((yOff, k) => (
+        <mesh key={k} position={[0.3, yOff, 0.62]} raycast={() => null}>
+          <boxGeometry args={[0.8, 0.015, 0.005]} />
+          <meshBasicMaterial color={hex('#1E293B')} toneMapped={false} />
+        </mesh>
+      ))}
+
+      {/* Interactive 2D HTML text label button — carries hover and click */}
+      <Html center position={[0, 0, 0.7]} distanceFactor={6}>
+        <button
+          type="button"
+          onMouseEnter={() => { setHovered(true); playHover(); }}
+          onMouseLeave={() => { setHovered(false); }}
+          onClick={(e) => { e.stopPropagation(); playClick(); onSelect(project); }}
+          className={`cursor-pointer px-4 py-2 rounded-xl border text-[11px] font-mono whitespace-nowrap transition-all duration-200 shadow-xl ${
+            hovered
+              ? 'bg-[#0A0E24] border-amber-400 text-white shadow-[0_0_24px_rgba(255,193,69,0.6)] scale-105 ring-2 ring-amber-400/50'
+              : 'bg-[#0A0E24]/90 border-amber-400/40 text-amber-300 hover:border-amber-400 hover:text-white'
+          }`}
         >
-          {hovered ? project.title : cta}
-        </div>
+          <span className="text-emerald-400 mr-2 animate-pulse">●</span>
+          <span className="font-bold tracking-wide">{project.title}</span>
+          <span className="text-white/30 mx-2">|</span>
+          <span className="text-amber-200/80 text-[10px] uppercase tracking-wider">{project.role}</span>
+          <span className="ml-2.5 text-amber-400 text-[10px] font-bold">&rarr;</span>
+        </button>
       </Html>
     </group>
   );
 }
 
-function ServerRack({ position, slots = 6, seed = 1, project, cta, onSelect }) {
+/* --- Decorative patch panel (non-interactive top section) --- */
+function PatchPanel({ yPos, width }) {
   const gold = useMemo(GOLD, []);
-  const amber = useMemo(AMBER, []);
-  const lightsRef = useRef([]);
-  const groupRef = useRef();
-  const [hovered, setHovered] = useState(false);
-  const rng = useMemo(() => seededRandom(seed), [seed]);
-  const blinkSpeeds = useMemo(() => Array.from({ length: slots }, () => 0.5 + rng() * 3), [slots, rng]);
-  const clickable = !!project;
+  const colors = useMemo(() => [
+    new THREE.Color(hex('#FACC15')), // yellow
+    new THREE.Color(hex('#38BDF8')), // blue
+    new THREE.Color(hex('#F97316')), // orange
+    new THREE.Color(hex('#10B981')), // green
+    new THREE.Color(hex('#EC4899')), // pink
+  ], []);
 
-  const rackH = slots * 0.4 + 0.3;
-
-  useFrame(({ clock }, delta) => {
-    lightsRef.current.forEach((mat, i) => {
-      if (mat) {
-        mat.opacity = 0.4 + Math.abs(Math.sin(clock.elapsedTime * blinkSpeeds[i] + i)) * 0.6;
+  // Ethernet port grid
+  const ports = useMemo(() => {
+    const p = [];
+    for (let row = 0; row < 2; row++) {
+      for (let col = 0; col < 12; col++) {
+        p.push({
+          x: -width / 2 + 0.45 + col * 0.24,
+          y: 0.08 - row * 0.18,
+          color: colors[Math.floor(col / 2.5) % colors.length],
+        });
       }
-    });
-    if (groupRef.current && clickable) {
-      const target = hovered ? 1.08 : 1;
-      const smoothing = 1 - Math.pow(1 - 0.15, delta * 60);
-      groupRef.current.scale.lerp(new THREE.Vector3(target, target, target), smoothing);
     }
-  });
+    return p;
+  }, [width, colors]);
 
   return (
-    <group position={position}>
-      <group
-        ref={groupRef}
-        onPointerOver={clickable ? (e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; playHover(); } : undefined}
-        onPointerOut={clickable ? (e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; } : undefined}
-        onClick={clickable ? (e) => { e.stopPropagation(); playClick(); onSelect(project); } : undefined}
-      >
-        {/* Rack frame */}
-        <mesh position={[0, rackH / 2, 0]}>
-          <boxGeometry args={[1.4, rackH, 1]} />
-          <meshStandardMaterial
-            color={hex(theme.colors.bgLight)}
-            emissive={gold}
-            emissiveIntensity={clickable && hovered ? 0.3 : 0.05}
-            metalness={0.4}
-            roughness={0.35}
-            transparent
-            opacity={0.75}
-          />
-        </mesh>
-        <mesh position={[0, rackH / 2, 0]}>
-          <boxGeometry args={[1.45, rackH + 0.05, 1.05]} />
-          <meshBasicMaterial
-            color={gold}
-            wireframe
-            transparent
-            opacity={clickable ? (hovered ? 0.9 : 0.5) : 0.3}
-            toneMapped={false}
-          />
-        </mesh>
-        {/* Slot lights */}
-        {Array.from({ length: slots }, (_, i) => (
-          <mesh key={i} position={[0.45, 0.35 + i * 0.4, 0.51]}>
-            <planeGeometry args={[0.35, 0.08]} />
-            <meshBasicMaterial
-              ref={el => (lightsRef.current[i] = el)}
-              color={i % 3 === 0 ? amber : gold}
-              transparent
-              opacity={0.7}
-              toneMapped={false}
-            />
-          </mesh>
-        ))}
-        {/* Wider invisible hit box - forgiving click target beyond the frame */}
-        {clickable && (
-          <mesh position={[0, rackH / 2, 0]} visible={false}>
-            <boxGeometry args={[1.9, rackH + 0.6, 1.5]} />
-            <meshBasicMaterial transparent opacity={0} />
-          </mesh>
-        )}
-      </group>
+    <group position={[0, yPos, 0]}>
+      {/* Patch panel faceplate */}
+      <mesh position={[0, 0, 0.52]} raycast={() => null}>
+        <boxGeometry args={[width - 0.2, 0.45, 0.1]} />
+        <meshPhysicalMaterial
+          color={hex('#0F172A')}
+          metalness={0.9}
+          roughness={0.2}
+          clearcoat={0.5}
+        />
+      </mesh>
 
-      {clickable && <RackPointer rackH={rackH} project={project} hovered={hovered} cta={cta} />}
+      {/* Ports */}
+      {ports.map((port, i) => (
+        <mesh key={i} position={[port.x, yPos === undefined ? port.y : port.y, 0.58]} raycast={() => null}>
+          <boxGeometry args={[0.12, 0.08, 0.02]} />
+          <meshBasicMaterial color={port.color} toneMapped={false} transparent opacity={0.7} />
+        </mesh>
+      ))}
     </group>
   );
 }
 
-function ServerLayer({ onSelectProject }) {
-  const racks = useMemo(() => {
-    const r = seededRandom(31);
-    return Array.from({ length: 7 }, (_, i) => ({
-      id: i,
-      position: [
-        -6 + i * 2 + (r() - 0.5),
-        -0.5,
-        (r() - 0.5) * 6 - 1,
-      ],
-      slots: 4 + Math.floor(r() * 4),
-      seed: i * 13 + 5,
-    }));
-  }, []);
+/* --- Cable bundles running down the side of the rack --- */
+function CableBundles({ cabinetH, cabinetW, projectCount }) {
+  const colors = useMemo(() => [
+    hex('#FACC15'), // yellow
+    hex('#38BDF8'), // blue
+    hex('#F97316'), // orange
+    hex('#10B981'), // green
+    hex('#A78BFA'), // purple
+  ], []);
+
+  const cables = useMemo(() => {
+    return Array.from({ length: projectCount }, (_, i) => {
+      const yStart = cabinetH / 2 - 0.5; // top patch panel
+      const yEnd = cabinetH / 2 - 1.2 - i * 0.75; // each project unit
+      const xSide = cabinetW / 2 + 0.15;
+      const curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(xSide, yStart, 0.45),
+        new THREE.Vector3(xSide + 0.15 + i * 0.04, yStart - 0.2, 0.5),
+        new THREE.Vector3(xSide + 0.2 + i * 0.04, yEnd + 0.2, 0.5),
+        new THREE.Vector3(xSide, yEnd, 0.45),
+      ], false, 'catmullrom', 0.5);
+      return { curve, color: colors[i % colors.length] };
+    });
+  }, [cabinetH, cabinetW, projectCount, colors]);
 
   return (
-    <group position={[0, LAYERS.server, 0]}>
-      <LayerDisc y={0} radius={9} />
-      {racks.map((rack, i) => {
-        const pIdx = RACK_PROJECT_INDEX[i];
+    <group>
+      {cables.map((cable, i) => {
+        const geo = new THREE.TubeGeometry(cable.curve, 20, 0.025, 6, false);
         return (
-          <ServerRack
-            key={rack.id}
-            position={rack.position}
-            slots={rack.slots}
-            seed={rack.seed}
-            project={pIdx == null ? undefined : content.projects[pIdx]}
-            cta={pIdx == null ? undefined : RACK_CTAS[pIdx % RACK_CTAS.length]}
-            onSelect={onSelectProject}
-          />
+          <mesh key={i} geometry={geo} raycast={() => null}>
+            <meshStandardMaterial
+              color={cable.color}
+              metalness={0.3}
+              roughness={0.6}
+              emissive={cable.color}
+              emissiveIntensity={0.15}
+            />
+          </mesh>
         );
       })}
     </group>
   );
 }
 
+/* --- Full Server Layer: one big rack cabinet --- */
+function ServerLayer({ onSelectProject }) {
+  const gold = useMemo(GOLD, []);
+  const projects = content.projects;
+  const CABINET_W = 3.8;
+  const CABINET_H = projects.length * 0.75 + 1.8; // ~5.55
+  const CABINET_D = 1.1;
+
+  return (
+    <group position={[0, LAYERS.server, 0]}>
+      <LayerDisc y={0} radius={9} />
+
+      {/* Sleek Horizontal 3D Action Callout */}
+      <Html position={[0, CABINET_H / 2 + 1.5, 0]} center distanceFactor={10} style={{ pointerEvents: 'none' }}>
+        <div className="glass-panel px-5 py-2 rounded-full border border-amber-400/40 text-amber-300 font-mono text-[10px] tracking-widest uppercase shadow-[0_0_18px_rgba(255,193,69,0.35)] flex flex-row items-center gap-3 whitespace-nowrap">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0" />
+          <span>CLICK ANY RACK UNIT TO INSPECT PROJECT &darr;</span>
+        </div>
+      </Html>
+
+      {/* ==================== THE CABINET ==================== */}
+      <group position={[0, CABINET_H / 2 - 1.5, -1]}>
+
+        {/* Back panel — dark brushed aluminum */}
+        <mesh position={[0, 0, 0]} raycast={() => null}>
+          <boxGeometry args={[CABINET_W, CABINET_H, CABINET_D]} />
+          <meshPhysicalMaterial
+            color={hex('#070B19')}
+            metalness={0.92}
+            roughness={0.18}
+            clearcoat={0.8}
+            clearcoatRoughness={0.15}
+          />
+        </mesh>
+
+        {/* 4 chrome corner posts */}
+        {[
+          [-CABINET_W / 2, CABINET_D / 2],
+          [CABINET_W / 2, CABINET_D / 2],
+          [-CABINET_W / 2, -CABINET_D / 2],
+          [CABINET_W / 2, -CABINET_D / 2],
+        ].map(([x, z], i) => (
+          <mesh key={i} position={[x, 0, z]} raycast={() => null}>
+            <cylinderGeometry args={[0.04, 0.04, CABINET_H, 12]} />
+            <meshStandardMaterial color={hex('#94A3B8')} metalness={0.98} roughness={0.08} />
+          </mesh>
+        ))}
+
+        {/* Vertical mounting rails (front face) */}
+        {[-CABINET_W / 2 + 0.12, CABINET_W / 2 - 0.12].map((x, i) => (
+          <mesh key={`rail-${i}`} position={[x, 0, CABINET_D / 2 + 0.01]} raycast={() => null}>
+            <boxGeometry args={[0.06, CABINET_H - 0.1, 0.02]} />
+            <meshStandardMaterial
+              color={gold}
+              metalness={0.95}
+              roughness={0.1}
+              emissive={gold}
+              emissiveIntensity={0.05}
+            />
+          </mesh>
+        ))}
+
+        {/* Wireframe overlay for that server-rack edge aesthetic */}
+        <mesh position={[0, 0, 0]} raycast={() => null}>
+          <boxGeometry args={[CABINET_W + 0.04, CABINET_H + 0.04, CABINET_D + 0.04]} />
+          <meshBasicMaterial color={gold} wireframe transparent opacity={0.12} toneMapped={false} />
+        </mesh>
+
+        {/* ---- Patch Panel at top ---- */}
+        <PatchPanel yPos={CABINET_H / 2 - 0.4} width={CABINET_W} />
+
+        {/* ---- Project Rack Units — stacked vertically ---- */}
+        {projects.map((project, i) => (
+          <ProjectUnit
+            key={project.id}
+            yPos={CABINET_H / 2 - 1.2 - i * 0.75}
+            project={project}
+            index={i}
+            onSelect={onSelectProject}
+          />
+        ))}
+
+        {/* ---- Cable bundles on the right side ---- */}
+        <CableBundles cabinetH={CABINET_H} cabinetW={CABINET_W} projectCount={projects.length} />
+
+        {/* ---- Bottom decorative blank panel ---- */}
+        <mesh position={[0, -CABINET_H / 2 + 0.25, 0.52]} raycast={() => null}>
+          <boxGeometry args={[CABINET_W - 0.2, 0.35, 0.1]} />
+          <meshPhysicalMaterial
+            color={hex('#0B1120')}
+            metalness={0.9}
+            roughness={0.2}
+          />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+
 /* ---------------------------------------------------------------------------
- * LAYER 3 - NETWORK: skills constellation, clustered by category
+ * LAYER 3 - NETWORK: skills constellation
  * ------------------------------------------------------------------------ */
 function SkillNode({ position, size, pulseSpeed, pulseOffset, name }) {
-  const meshRef = useRef();
+  const outerMeshRef = useRef();
+  const innerMeshRef = useRef();
   const materialRef = useRef();
   const hoverScaleRef = useRef(1);
   const [hovered, setHovered] = useState(false);
   const color = useMemo(() => new THREE.Color(hex(theme.colors.accentPrimary)), []);
+  const gold = useMemo(GOLD, []);
 
   useFrame(({ clock }, delta) => {
-    if (!meshRef.current) return;
+    if (!outerMeshRef.current) return;
     const t = clock.elapsedTime * pulseSpeed + pulseOffset;
     const breathe = 1 + Math.sin(t) * 0.15;
-    const smoothing = 1 - Math.pow(1 - 0.15, delta * 60);
-    hoverScaleRef.current += ((hovered ? 1.6 : 1) - hoverScaleRef.current) * smoothing;
-    meshRef.current.scale.setScalar(breathe * hoverScaleRef.current);
+    const smoothing = 1 - Math.pow(1 - 0.18, delta * 60);
+    hoverScaleRef.current += ((hovered ? 1.7 : 1) - hoverScaleRef.current) * smoothing;
+    const currentScale = breathe * hoverScaleRef.current;
+    outerMeshRef.current.scale.setScalar(currentScale);
+    if (innerMeshRef.current) innerMeshRef.current.scale.setScalar(currentScale * 0.55);
     if (materialRef.current) {
       materialRef.current.emissiveIntensity = hovered
-        ? theme.emissive.nodeHover
-        : theme.emissive.nodeIdle + Math.sin(t) * 0.3;
+        ? theme.emissive.nodeHover * 1.5
+        : theme.emissive.nodeIdle + Math.sin(t) * 0.4;
     }
   });
 
   return (
-    <group position={position}>
-      <mesh
-        ref={meshRef}
-        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; playHover(); }}
-        onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }}
-      >
+    <group position={position} raycast={() => null}>
+      {/* Inner Glowing Metallic Core */}
+      <mesh ref={innerMeshRef} raycast={() => null}>
         <sphereGeometry args={[size, 16, 16]} />
         <meshStandardMaterial
           ref={materialRef}
-          color={color}
-          emissive={color}
+          color={gold}
+          emissive={gold}
           emissiveIntensity={theme.emissive.nodeIdle}
-          toneMapped={false}
+          metalness={0.95}
+          roughness={0.1}
         />
       </mesh>
-      <Html center distanceFactor={8} style={{ pointerEvents: 'none' }}>
-        <div
-          style={{
-            background: 'rgba(5,8,24,0.85)',
-            border: '1px solid rgba(255,193,69,0.35)',
-            color: '#FFF8E7',
-            fontSize: '10px',
-            fontFamily: 'monospace',
-            padding: '4px 8px',
-            borderRadius: '2px',
-            whiteSpace: 'nowrap',
-            transform: 'translateY(-22px)',
-            opacity: hovered ? 1 : 0,
-            transition: 'opacity 0.2s',
-          }}
+
+      {/* Outer Translucent Glass Shell */}
+      <mesh ref={outerMeshRef} raycast={() => null}>
+        <sphereGeometry args={[size, 20, 20]} />
+        <meshPhysicalMaterial
+          color={color}
+          transmission={0.88}
+          thickness={0.4}
+          roughness={0.05}
+          clearcoat={1.0}
+          clearcoatRoughness={0.1}
+          ior={1.48}
+          transparent
+          opacity={0.85}
+        />
+      </mesh>
+
+      {/* Interactive 2D HTML skill text label button — carries hover */}
+      <Html center distanceFactor={8}>
+        <button
+          type="button"
+          onMouseEnter={() => { setHovered(true); playHover(); }}
+          onMouseLeave={() => { setHovered(false); }}
+          className={`cursor-pointer px-3 py-1.5 rounded-lg border text-[11px] font-mono whitespace-nowrap transition-all duration-200 ${
+            hovered
+              ? 'bg-[#0A0E24] border-amber-400 text-white shadow-[0_0_16px_rgba(255,193,69,0.6)] scale-110'
+              : 'bg-[#0A0E24]/85 border-white/20 text-slate-200 hover:border-amber-400/60'
+          }`}
         >
+          <span className={`mr-1.5 ${hovered ? 'text-amber-400' : 'text-slate-400'}`}>◆</span>
           {name}
-        </div>
+        </button>
       </Html>
     </group>
   );
@@ -623,17 +769,7 @@ function SkillNode({ position, size, pulseSpeed, pulseOffset, name }) {
 function ClusterLabel({ position, label }) {
   return (
     <Html center position={position} distanceFactor={9} style={{ pointerEvents: 'none' }}>
-      <div
-        style={{
-          color: '#FFC145',
-          fontFamily: 'monospace',
-          fontSize: '10px',
-          letterSpacing: '0.25em',
-          textTransform: 'uppercase',
-          textShadow: '0 0 8px rgba(255,193,69,0.5)',
-          whiteSpace: 'nowrap',
-        }}
-      >
+      <div className="text-[10px] font-mono tracking-widest text-amber-400 uppercase drop-shadow-[0_0_8px_rgba(255,193,69,0.5)] whitespace-nowrap">
         {label}
       </div>
     </Html>
@@ -641,36 +777,38 @@ function ClusterLabel({ position, label }) {
 }
 
 function NetworkLayer() {
-  // One spatial cluster per skill group, arranged around a ring so
-  // each category reads as a distinct constellation.
   const clusters = useMemo(() => {
-    const groups = content.skills;
+    // Filter out empty skill groups
+    const groups = content.skills.filter(g => g.items && g.items.length > 0);
     return groups.map((group, gi) => {
       const angle = (gi / groups.length) * Math.PI * 2;
-      const cx = Math.cos(angle) * 5.5;
-      const cz = Math.sin(angle) * 5.5 - 1;
+      const cx = Math.cos(angle) * 6.5;
+      const cz = Math.sin(angle) * 6.5 - 1;
       const cy = (gi % 2 === 0 ? 1 : -1) * 0.8;
       const r = seededRandom(gi * 101 + 7);
+      const itemCount = group.items.length;
+      // Fixed radius for entire cluster — no per-node randomness ensures even spacing
+      const clusterRadius = 1.5 + (itemCount > 6 ? 0.4 : 0);
 
       const nodes = group.items.map((name, ni) => {
-        const a = (ni / group.items.length) * Math.PI * 2 + r();
-        const radius = 0.9 + r() * 0.7;
+        // Even angular spacing ensures every node is visible
+        const a = (ni / itemCount) * Math.PI * 2;
+        // Deterministic y-offset using node index instead of random to avoid vertical overlap
+        const yOff = ((ni % 3) - 1) * 0.6;
         return {
           id: `${group.group}-${ni}`,
           name,
           position: [
-            cx + Math.cos(a) * radius,
-            cy + (r() - 0.5) * 1.2,
-            cz + Math.sin(a) * radius,
+            cx + Math.cos(a) * clusterRadius,
+            cy + yOff,
+            cz + Math.sin(a) * clusterRadius,
           ],
-          size: 0.11 + r() * 0.07,
-          pulseSpeed: 0.5 + r() * 1,
-          pulseOffset: r() * Math.PI * 2,
+          size: 0.13,
+          pulseSpeed: 0.5 + (ni * 0.15),
+          pulseOffset: (ni / itemCount) * Math.PI * 2,
         };
       });
 
-      // Connect each node back to the cluster center so it reads as
-      // a hub, plus a few cross-links for texture.
       const center = [cx, cy, cz];
       const links = nodes.map(n => ({
         id: `${n.id}-hub`,
@@ -680,11 +818,10 @@ function NetworkLayer() {
         offset: r() * Math.PI * 2,
       }));
 
-      return { id: group.group, label: group.group, center, labelPosition: [cx, cy + 1.4, cz], nodes, links };
+      return { id: group.group, label: group.group, center, labelPosition: [cx, cy + 1.8, cz], nodes, links };
     });
   }, []);
 
-  // Backbone links connecting adjacent cluster centers - the "topology"
   const backbone = useMemo(() => {
     const l = [];
     for (let i = 0; i < clusters.length; i++) {
@@ -698,6 +835,14 @@ function NetworkLayer() {
   return (
     <group position={[0, LAYERS.network, 0]}>
       <LayerDisc y={0} radius={9} />
+
+      {/* Sleek Horizontal 3D Action Callout Pill above Constellation */}
+      <Html position={[0, 4.5, 0]} center distanceFactor={10} style={{ pointerEvents: 'none' }}>
+        <div className="glass-panel px-5 py-2 rounded-full border border-amber-400/40 text-amber-300 font-mono text-[10px] tracking-widest uppercase shadow-[0_0_18px_rgba(255,193,69,0.35)] flex flex-row items-center gap-3 whitespace-nowrap">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0" />
+          <span>HOVER ON ANY NODE TO VIEW SKILL &darr;</span>
+        </div>
+      </Html>
 
       {clusters.map(cluster => (
         <group key={cluster.id}>
@@ -719,17 +864,13 @@ function NetworkLayer() {
 }
 
 /* ---------------------------------------------------------------------------
- * LAYER 4 - BARE METAL: circuit floor
+ * LAYER 4 - BARE METAL: circuit floor & metallic core
  * ------------------------------------------------------------------------ */
 function MetalLayer({ gpuTier = 3 }) {
   const gold = useMemo(GOLD, []);
   const amber = useMemo(AMBER, []);
-  // Weaker GPUs are mostly phones, where the overlay text has far less
-  // side margin and sits right on top of this glow instead of beside
-  // it - dim the whole floor down rather than just the core.
   const dim = gpuTier >= 3 ? 1 : 0.55;
 
-  // Circuit traces: L-shaped glowing paths on the floor
   const traces = useMemo(() => {
     const r = seededRandom(61);
     const t = [];
@@ -760,13 +901,11 @@ function MetalLayer({ gpuTier = 3 }) {
   });
 
   return (
-    <group position={[0, LAYERS.metal, 0]}>
-      {/* Grid floor */}
+    <group position={[0, LAYERS.metal, 0]} raycast={() => null}>
       <gridHelper
-        args={[24, 24, hex(theme.colors.accentDeep), hex(theme.colors.bgLight)]}
+        args={[24, 24, hex(theme.colors.accentDeep), hex(theme.colors.metalDark)]}
         position={[0, -0.5, 0]}
       />
-      {/* Circuit traces */}
       {traces.map((tr, i) => (
         <mesh key={tr.id} position={tr.position} scale={tr.scale}>
           <boxGeometry args={[1, 1, 1]} />
@@ -779,20 +918,21 @@ function MetalLayer({ gpuTier = 3 }) {
           />
         </mesh>
       ))}
-      {/* Central core - the destination */}
       <mesh position={[0, 0.4, -1]}>
         <octahedronGeometry args={[0.7, 0]} />
-        <meshStandardMaterial
+        <meshPhysicalMaterial
           color={gold}
           emissive={gold}
-          emissiveIntensity={0.9 * dim}
-          metalness={0.3}
-          roughness={0.35}
+          emissiveIntensity={0.8 * dim}
+          metalness={0.9}
+          roughness={0.15}
+          clearcoat={1.0}
         />
       </mesh>
     </group>
   );
 }
+
 
 /* ---------------------------------------------------------------------------
  * Export the full stack

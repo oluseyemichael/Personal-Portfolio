@@ -94,7 +94,7 @@ export default function App() {
 
       {/* UI overlays on top of canvas */}
       <div className="ui-overlay">
-        <Header />
+        <Header scrollProgress={scrollProgress} />
         <ZoneOverlays scrollProgress={scrollProgress} />
         <ProgressIndicator scrollProgress={scrollProgress} />
         <SoundToggle />

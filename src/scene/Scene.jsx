@@ -18,81 +18,87 @@ export function Scene({ scrollRef, onSelectProject, gpuTier = 3 }) {
   return (
     <Canvas
       camera={{ position: [0, 2.5, 7], fov: 55, near: 0.1, far: 200 }}
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       shadows={highTier ? 'soft' : false}
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
       onCreated={({ gl, scene }) => {
         gl.setClearColor(new THREE.Color(hex(theme.colors.bgDeep)));
         gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = 1.05;
-        scene.fog = new THREE.Fog(hex(theme.colors.fog), 10, 55);
+        gl.toneMappingExposure = 1.15;
+        scene.fog = new THREE.Fog(hex(theme.colors.fog), theme.scene.fogNear, theme.scene.fogFar);
       }}
     >
       <Suspense fallback={null}>
-        {/* Minimal lighting - emissive materials do the work */}
-        <ambientLight intensity={0.15} color={hex(theme.colors.accentDeep)} />
+        {/* Soft, rich ambient fill for PBR shadows */}
+        <ambientLight intensity={0.35} color={hex('#1E293B')} />
 
-        {/* Image-based reflections for metal/plastic surfaces. Skipped on
-            weaker GPUs/mobile tiers to avoid the extra HDRI download + cost. */}
-        {highTier && <Environment preset="night" background={false} resolution={128} />}
+        {/* Environment reflection map for metals & glass */}
+        {highTier && <Environment preset="city" background={false} resolution={256} />}
 
-        {/* One point light per layer so each level has presence */}
-        <pointLight position={[0, LAYERS.surface + 4, 4]} intensity={2} color={hex(theme.colors.accentPrimary)} distance={18} />
-        {/* Warm key light on the avatar's face - the only shadow-casting light,
-            to keep the shadow-map cost to a single caster. */}
+        {/* Key & Rim Studio Lights per layer for metallic highlights */}
+        {/* Surface / Product Key & Rim */}
+        <pointLight position={[3, LAYERS.surface + 4, 4]} intensity={2.4} color={hex('#06B6D4')} distance={20} />
+        <directionalLight position={[-4, LAYERS.surface + 6, -3]} intensity={1.5} color={hex('#CBD5E1')} />
         <spotLight
           position={[2, LAYERS.surface + 3, 5]}
           target-position={[0, LAYERS.surface + 1.5, 0]}
-          intensity={2.5}
+          intensity={2.6}
           angle={0.6}
           penumbra={0.8}
-          color={hex('#FFD86B')}
-          distance={16}
+          color={hex('#F59E0B')}
+          distance={18}
           castShadow={highTier}
           shadow-mapSize={[1024, 1024]}
           shadow-bias={-0.0005}
         />
-        <pointLight position={[0, LAYERS.application + 3, 3]} intensity={1.5} color={hex(theme.colors.accentSecondary)} distance={16} />
-        <pointLight position={[0, LAYERS.server + 3, 3]} intensity={1.8} color={hex(theme.colors.accentPrimary)} distance={16} />
-        <pointLight position={[0, LAYERS.network + 3, 3]} intensity={1.5} color={hex(theme.colors.accentSecondary)} distance={16} />
-        <pointLight position={[0, LAYERS.metal + 3, 3]} intensity={2} color={hex(theme.colors.accentPrimary)} distance={18} />
 
-        {/* The avatar greets at the surface */}
+        {/* Application Layer Key & Rim */}
+        <pointLight position={[-3, LAYERS.application + 3, 3]} intensity={2.0} color={hex('#10B981')} distance={18} />
+        <directionalLight position={[4, LAYERS.application + 4, -2]} intensity={1.3} color={hex('#06B6D4')} />
+
+        {/* Server Layer Key & Rim */}
+        <pointLight position={[0, LAYERS.server + 4, 4]} intensity={2.6} color={hex('#06B6D4')} distance={22} />
+        <directionalLight position={[-4, LAYERS.server + 2, -3]} intensity={1.8} color={hex('#10B981')} />
+
+        {/* Network Layer Key & Rim */}
+        <pointLight position={[3, LAYERS.network + 3, 3]} intensity={2.2} color={hex('#EC4899')} distance={18} />
+        <directionalLight position={[-3, LAYERS.network + 4, -2]} intensity={1.5} color={hex('#06B6D4')} />
+
+        {/* Bare Metal Layer Key & Core Light */}
+        <pointLight position={[0, LAYERS.metal + 4, 4]} intensity={3.0} color={hex('#06B6D4')} distance={24} />
+        <pointLight position={[0, LAYERS.metal + 1, 0]} intensity={4.5} color={hex('#F59E0B')} distance={14} />
+
+        {/* Surface avatar figure */}
         <AbstractAvatar position={[0, LAYERS.surface, 0]} castShadows={highTier} />
 
-        {/* The five layers of the stack */}
+        {/* Stack environments with PBR materials */}
         <StackLayers onSelectProject={onSelectProject} gpuTier={gpuTier} />
 
-        {/* Cable runs connecting the layers - Cat6 bundles + fibre with light pulses */}
+        {/* Cable conduits & fiber strands */}
         <Cables />
 
-        {/* Submarine-style depth readout down the side */}
+        {/* Submarine-style telemetry depth readout */}
         <DepthMarkers />
 
-        {/* Atmosphere - fewer particles on weaker GPUs */}
+        {/* Floating atmospheric dust */}
         <Particles count={highTier ? theme.scene.particleCount : Math.round(theme.scene.particleCount * 0.4)} />
 
-        {/* Camera driven by scroll */}
+        {/* Scroll-driven camera controller */}
         <CameraRig scrollRef={scrollRef} />
 
-        {/* Bloom is what actually makes emissive materials glow.
-            Tier 2 (weaker GPUs) gets a cheaper, lower-res pass. Ambient
-            occlusion and the lens vignette add grounding/depth cues that
-            read as "real" rather than flat-lit; AO is tier-3 only. */}
-        <EffectComposer multisampling={highTier ? 4 : 0}>
+        {/* Crisp post-processing bloom (optimized zero multisampling) */}
+        <EffectComposer multisampling={0}>
           <Bloom
-            intensity={highTier ? 0.9 : 0.5}
-            luminanceThreshold={0.2}
-            luminanceSmoothing={0.3}
+            intensity={highTier ? 0.65 : 0.4}
+            luminanceThreshold={0.7}
+            luminanceSmoothing={0.4}
             mipmapBlur
-            resolutionScale={highTier ? 1 : 0.5}
+            resolutionScale={0.5}
           />
-          {highTier && (
-            <N8AO aoRadius={1.2} intensity={1.4} distanceFalloff={1} quality="performance" />
-          )}
-          <Vignette offset={0.25} darkness={0.6} />
+          <Vignette offset={0.2} darkness={0.65} />
         </EffectComposer>
       </Suspense>
     </Canvas>
   );
 }
+

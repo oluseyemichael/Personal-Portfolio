@@ -4,14 +4,8 @@ import * as THREE from 'three';
 import { theme, hex } from '../config/theme.js';
 import { LAYERS } from './CameraPath.js';
 
-/**
- * Cable runs. Sparse layout (8 bundles) but each runs CONTINUOUSLY
- * from surface to bare metal - no cuts at layer boundaries.
- * Pulses kept slow.
- */
-
-const Y_TOP = LAYERS.surface - 0.5;
-const Y_BOTTOM = LAYERS.metal - 0.4;
+const Y_TOP = LAYERS.surface + 2;
+const Y_BOTTOM = LAYERS.metal - 2;
 
 function seededRandom(seed) {
   let s = seed;
@@ -21,154 +15,201 @@ function seededRandom(seed) {
   };
 }
 
-// One continuous curve spanning the whole stack, gently undulating
-function makeContinuousCable(x, z, sway, rng) {
+// Generates smooth vertical conduit curve for main trunk
+function makeTrunkCurve(x, z, sway) {
   const points = [];
-  const segments = 20;
-  const phase = rng() * Math.PI * 2;
-  const freq = 1.5 + rng() * 1.5;
-  for (let i = 0; i <= segments; i++) {
-    const t = i / segments;
+  const steps = 24;
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
     const y = Y_TOP + (Y_BOTTOM - Y_TOP) * t;
-    const taper = Math.sin(t * Math.PI);
-    const swayAmount = sway * (0.35 + taper * 0.65);
-    points.push(new THREE.Vector3(
-      x + Math.sin(t * Math.PI * freq + phase) * swayAmount,
-      y,
-      z + Math.cos(t * Math.PI * (freq * 0.7) + phase) * swayAmount,
-    ));
+    const swayX = Math.sin(t * Math.PI * 2) * sway;
+    const swayZ = Math.cos(t * Math.PI * 1.5) * (sway * 0.5);
+    points.push(new THREE.Vector3(x + swayX, y, z + swayZ));
   }
   return new THREE.CatmullRomCurve3(points);
 }
 
-function Cat6Cable({ curve, color, radius = 0.045 }) {
-  const geometry = useMemo(
-    () => new THREE.TubeGeometry(curve, 80, radius, 6, false),
-    [curve, radius],
-  );
-  return (
-    <mesh geometry={geometry}>
-      <meshStandardMaterial
-        color={color}
-        roughness={0.85}
-        metalness={0.05}
-        emissive={color}
-        emissiveIntensity={0.06}
-      />
-    </mesh>
-  );
-}
+// Single Industrial Fiber Optic Trunk (Matching Reference Image)
+function FiberOpticTrunk({ x, z, sway = 0.5, seed = 1 }) {
+  const rng = useMemo(() => seededRandom(seed), [seed]);
+  const mainCurve = useMemo(() => makeTrunkCurve(x, z, sway), [x, z, sway]);
 
-function FibreStrand({ curve, pulseSpeed, pulseOffset, pulseCount }) {
-  const pulseRefs = useRef([]);
-  const gold = useMemo(() => new THREE.Color(hex(theme.colors.accentPrimary)), []);
-  const cream = useMemo(() => new THREE.Color(hex('#FFF8E7')), []);
-
-  const geometry = useMemo(
-    () => new THREE.TubeGeometry(curve, 80, 0.012, 4, false),
-    [curve],
+  // Main Outer Sheath Geometry (Optimized Segment Count)
+  const sheathGeo = useMemo(
+    () => new THREE.TubeGeometry(mainCurve, 50, 0.22, 10, false),
+    [mainCurve],
   );
+
+  // Sub-cable jackets inside the trunk (Cyan, Gold, Emerald, Magenta, Blue, Yellow)
+  const subCableColors = useMemo(() => [
+    hex('#06B6D4'), // Cyan
+    hex('#F59E0B'), // Gold
+    hex('#10B981'), // Emerald
+    hex('#EC4899'), // Magenta
+    hex('#EAB308'), // Yellow
+    hex('#0284C7'), // Blue
+  ], []);
+
+  const subCurves = useMemo(() => {
+    return subCableColors.map((color, idx) => {
+      const angle = (idx / subCableColors.length) * Math.PI * 2;
+      const rOffset = 0.12;
+      const points = mainCurve.points.map((pt, pIdx) => {
+        const t = pIdx / (mainCurve.points.length - 1);
+        const spread = t > 0.85 ? (t - 0.85) * 4 : 1; // fan out near bare metal
+        const ox = Math.cos(angle + t * 2) * rOffset * spread;
+        const oz = Math.sin(angle + t * 2) * rOffset * spread;
+        return new THREE.Vector3(pt.x + ox, pt.y, pt.z + oz);
+      });
+      const curve = new THREE.CatmullRomCurve3(points);
+      const geo = new THREE.TubeGeometry(curve, 40, 0.045, 8, false);
+      return {
+        id: idx,
+        color,
+        curve,
+        geo,
+      };
+    });
+  }, [mainCurve, subCableColors]);
+
+  // Glass Fiber Filaments (Translucent glass strands with light pulses)
+  const fiberPulsesRef = useRef([]);
+  const fiberCurves = useMemo(() => {
+    return subCurves.flatMap((sub, sIdx) => {
+      return [0, 1].map((fIdx) => {
+        const angle = (fIdx / 2) * Math.PI * 2;
+        const fPoints = sub.curve.points.map((pt, pIdx) => {
+          const t = pIdx / (sub.curve.points.length - 1);
+          const fan = t > 0.75 ? (t - 0.75) * 5 : 0.8;
+          return new THREE.Vector3(
+            pt.x + Math.cos(angle + t * 4) * 0.05 * fan,
+            pt.y,
+            pt.z + Math.sin(angle + t * 4) * 0.05 * fan,
+          );
+        });
+        const curve = new THREE.CatmullRomCurve3(fPoints);
+        const geo = new THREE.TubeGeometry(curve, 32, 0.014, 5, false);
+        return {
+          id: `${sIdx}-${fIdx}`,
+          curve,
+          geo,
+          speed: 0.08 + rng() * 0.06,
+          offset: rng(),
+          color: sub.color,
+        };
+      });
+    });
+  }, [subCurves, rng]);
+
+  // Metallic Collar Joint Positions along the vertical shaft
+  const collarPositions = useMemo(() => [
+    LAYERS.surface - 1,
+    LAYERS.application - 1,
+    LAYERS.server - 1,
+    LAYERS.network - 1,
+    LAYERS.metal + 1,
+  ], []);
 
   useFrame(({ clock }) => {
-    pulseRefs.current.forEach((mesh, i) => {
-      if (!mesh) return;
-      const t = (clock.elapsedTime * pulseSpeed + pulseOffset + i / pulseCount) % 1;
-      const point = curve.getPointAt(t);
-      mesh.position.copy(point);
-      const fade = Math.sin(t * Math.PI);
-      mesh.scale.setScalar(0.4 + fade * 0.7);
+    fiberCurves.forEach((f, i) => {
+      const pulse = fiberPulsesRef.current[i];
+      if (pulse) {
+        const t = (clock.elapsedTime * f.speed + f.offset) % 1;
+        const pt = f.curve.getPointAt(t);
+        pulse.position.copy(pt);
+        const glow = Math.sin(t * Math.PI);
+        pulse.scale.setScalar(0.6 + glow * 0.8);
+      }
     });
   });
 
   return (
     <group>
-      <mesh geometry={geometry}>
-        <meshBasicMaterial color={gold} transparent opacity={0.35} toneMapped={false} />
+      {/* 1. Dark Outer Protective Sheath */}
+      <mesh geometry={sheathGeo}>
+        <meshPhysicalMaterial
+          color={hex('#0F172A')}
+          roughness={0.45}
+          metalness={0.2}
+          clearcoat={0.3}
+          transparent
+          opacity={0.92}
+        />
       </mesh>
-      {Array.from({ length: pulseCount }, (_, i) => (
-        <mesh key={i} ref={el => (pulseRefs.current[i] = el)}>
-          <sphereGeometry args={[0.05, 8, 8]} />
-          <meshBasicMaterial color={cream} toneMapped={false} />
+
+      {/* 2. Metallic Threaded Collar Rings at Layer Junctions */}
+      {collarPositions.map((yPos, idx) => {
+        const tVal = Math.max(0, Math.min(1, (Y_TOP - yPos) / (Y_TOP - Y_BOTTOM)));
+        const point = mainCurve.getPointAt(tVal);
+        return (
+          <group key={idx} position={[point.x, yPos, point.z]}>
+            {/* Outer Ribbed Silver Collar */}
+            <mesh>
+              <cylinderGeometry args={[0.26, 0.26, 0.25, 20]} />
+              <meshStandardMaterial
+                color={hex(theme.colors.metalSilver)}
+                metalness={0.95}
+                roughness={0.1}
+              />
+            </mesh>
+            {/* Threaded Ring Details */}
+            {[-0.08, 0, 0.08].map((offset, rIdx) => (
+              <mesh key={rIdx} position={[0, offset, 0]}>
+                <torusGeometry args={[0.27, 0.015, 6, 20]} />
+                <meshStandardMaterial color={hex('#94A3B8')} metalness={0.9} roughness={0.15} />
+              </mesh>
+            ))}
+          </group>
+        );
+      })}
+
+      {/* 3. Colorful Sub-Cable Jackets inside Trunk */}
+      {subCurves.map((sub) => (
+        <mesh key={sub.id} geometry={sub.geo}>
+          <meshPhysicalMaterial
+            color={sub.color}
+            roughness={0.25}
+            metalness={0.4}
+            clearcoat={0.6}
+            emissive={sub.color}
+            emissiveIntensity={0.1}
+          />
         </mesh>
       ))}
-    </group>
-  );
-}
 
-function CableBundle({ x, z, seed }) {
-  const rng = useMemo(() => seededRandom(seed), [seed]);
-
-  const jacketColors = useMemo(() => [
-    new THREE.Color(hex(theme.colors.accentDeep)),
-    new THREE.Color(hex(theme.colors.bgLight)),
-    new THREE.Color(hex('#8A7350')),
-    new THREE.Color(hex(theme.colors.bgLight)),
-    new THREE.Color(hex('#6B5B3E')),
-  ], []);
-
-  const cables = useMemo(() => {
-    const c = [];
-    const count = 3 + Math.floor(rng() * 3);
-    for (let i = 0; i < count; i++) {
-      const offsetX = (rng() - 0.5) * 0.35;
-      const offsetZ = (rng() - 0.5) * 0.35;
-      c.push({
-        id: `cat6-${i}`,
-        curve: makeContinuousCable(x + offsetX, z + offsetZ, 0.35 + rng() * 0.5, rng),
-        color: jacketColors[i % jacketColors.length],
-        radius: 0.035 + rng() * 0.02,
-      });
-    }
-    return c;
-  }, [x, z, rng, jacketColors]);
-
-  const fibres = useMemo(() => {
-    const f = [];
-    const count = 1 + Math.floor(rng() * 2);
-    for (let i = 0; i < count; i++) {
-      const offsetX = (rng() - 0.5) * 0.4;
-      const offsetZ = (rng() - 0.5) * 0.4;
-      f.push({
-        id: `fibre-${i}`,
-        curve: makeContinuousCable(x + offsetX, z + offsetZ, 0.25 + rng() * 0.35, rng),
-        pulseSpeed: 0.05 + rng() * 0.04,
-        pulseOffset: rng(),
-        pulseCount: 3 + Math.floor(rng() * 2),
-      });
-    }
-    return f;
-  }, [x, z, rng]);
-
-  return (
-    <group>
-      {cables.map(c => (
-        <Cat6Cable key={c.id} curve={c.curve} color={c.color} radius={c.radius} />
-      ))}
-      {fibres.map(f => (
-        <FibreStrand key={f.id} curve={f.curve} pulseSpeed={f.pulseSpeed} pulseOffset={f.pulseOffset} pulseCount={f.pulseCount} />
+      {/* 4. Translucent Glass Fiber Optic Filaments */}
+      {fiberCurves.map((f, i) => (
+        <group key={f.id}>
+          <mesh geometry={f.geo}>
+            <meshPhysicalMaterial
+              color={f.color}
+              transmission={0.9}
+              opacity={0.8}
+              transparent
+              roughness={0.05}
+              ior={1.45}
+              emissive={f.color}
+              emissiveIntensity={0.2}
+            />
+          </mesh>
+          {/* Traveling Light Pulse */}
+          <mesh ref={(el) => (fiberPulsesRef.current[i] = el)}>
+            <sphereGeometry args={[0.045, 8, 8]} />
+            <meshBasicMaterial color={f.color} toneMapped={false} />
+          </mesh>
+        </group>
       ))}
     </group>
   );
 }
 
 export function Cables() {
-  // 8 bundles around the perimeter, each running the FULL height
-  const runs = useMemo(() => [
-    { x: -6.5, z: -2,   seed: 101 },
-    { x: 5.5,  z: -3.5, seed: 102 },
-    { x: 7,    z: -1,   seed: 103 },
-    { x: -5.5, z: -4,   seed: 104 },
-    { x: -7,   z: -2.5, seed: 105 },
-    { x: 6,    z: -4,   seed: 106 },
-    { x: 5.5,  z: -1.5, seed: 107 },
-    { x: -6,   z: -3,   seed: 108 },
-  ], []);
-
+  // 2 primary industrial fiber optic trunks framing the stack
   return (
-    <group>
-      {runs.map(run => (
-        <CableBundle key={run.seed} {...run} />
-      ))}
+    <group raycast={() => null}>
+      <FiberOpticTrunk x={-6.8} z={-2.2} sway={0.6} seed={101} />
+      <FiberOpticTrunk x={6.8} z={-2.2} sway={-0.6} seed={202} />
     </group>
   );
 }
+
