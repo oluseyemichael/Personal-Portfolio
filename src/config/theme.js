@@ -1,33 +1,33 @@
-// Central design tokens for the entire experience.
-// Warm amber/gold theme on deep navy space backdrop.
+// Central design tokens for the WeAreKettle & UnitedCarriers inspired visual system.
+// Deep obsidian black, machined steel chassis, crisp bone white typography, cyan HUD indicators.
 
 export const theme = {
   colors: {
-    // Deep navy & space backgrounds (original theme)
-    bgDeep: '#050818',       // Near-black navy
-    bgMid: '#0A0E24',        // Core base navy
-    bgLight: '#101635',      // Elevated surface navy
-    fog: '#0A0E24',          // Scene fog color
+    // Deep obsidian & dark space backgrounds
+    bgDeep: '#06080F',       // Pure dark obsidian space
+    bgMid: '#0B0F19',        // Structural card base
+    bgLight: '#121827',      // Elevated surface navy
+    fog: '#06080F',          // Scene fog color
 
-    // Metallic chassis & glass panel accents
-    metalDark: '#121829',    // Brushed dark aluminum
-    metalMid: '#1e293b',     // Machined steel frame
+    // Metallic chassis & precision rim borders
+    metalDark: '#0D1322',    // Dark architectural panel
+    metalMid: '#1E293B',     // Steel chassis frame
     metalSteel: '#475569',   // Polished steel
-    metalSilver: '#CBD5E1',  // Chrome / silver collar highlights
-    glassBorder: 'rgba(255, 255, 255, 0.12)', // Crisp glass rim border
-    glassBg: 'rgba(10, 14, 36, 0.72)',         // Frosted glass card backdrop
+    metalSilver: '#E2E8F0',  // Platinum highlights
+    glassBorder: 'rgba(255, 255, 255, 0.10)', // Hairline border
+    glassBg: 'rgba(11, 15, 25, 0.85)',         // Dark architectural card backdrop
 
-    // Accents (Warm Amber / Gold primary system)
-    accentPrimary: '#FFC145',   // Main warm golden glow
-    accentSecondary: '#F59E0B', // Rich amber accent
-    accentTertiary: '#FBBF24',  // Bright golden highlight
-    accentDeep: '#D97706',      // Rich orange/burnished amber
-    statusOk: '#10B981',        // Telemetry green indicator
+    // Precision Accents (UnitedCarriers Cyan & Platinum)
+    accentPrimary: '#38BDF8',   // Crisp HUD telemetry cyan
+    accentSecondary: '#F8FAFC', // Bone white
+    accentTertiary: '#94A3B8',  // Platinum slate
+    accentDeep: '#0284C7',      // Deep electric blue
+    statusOk: '#10B981',        // Telemetry status ok
 
-    // Text & HUD Labels (Warm Cream)
-    textPrimary: '#FFF8E7',    // Warm cream white
-    textMuted: 'rgba(255, 248, 231, 0.65)',
-    textSubtle: 'rgba(255, 248, 231, 0.35)',
+    // Text & HUD Labels (High-contrast Bone White & Slate)
+    textPrimary: '#F8FAFC',    // Bone white
+    textMuted: '#94A3B8',      // Slate grey
+    textSubtle: 'rgba(148, 163, 184, 0.4)',
   },
 
   // Emissive intensities for 3D materials
@@ -59,6 +59,3 @@ export const theme = {
 
 // Convert hex string to THREE.Color-friendly value
 export const hex = (c) => parseInt(c.replace('#', ''), 16);
-
-
-
