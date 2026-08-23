@@ -2,7 +2,6 @@ import { useRef, useEffect, useState, useCallback, lazy, Suspense } from 'react'
 import { ZoneOverlays } from './components/ZoneOverlays.jsx';
 import { ProgressIndicator } from './components/ProgressIndicator.jsx';
 import { ProjectDetail } from './components/ProjectDetail.jsx';
-import { MobileFallback } from './components/MobileFallback.jsx';
 import { SceneErrorBoundary } from './components/SceneErrorBoundary.jsx';
 import { SoundToggle } from './components/SoundToggle.jsx';
 import { Header } from './components/Header.jsx';
@@ -19,7 +18,7 @@ const SCROLL_MILESTONES = [25, 50, 75, 100];
 const Scene = lazy(() => import('./scene/Scene.jsx').then((m) => ({ default: m.Scene })));
 
 export default function App() {
-  const { isMobile, gpuTier } = useDeviceCapability();
+  const { gpuTier } = useDeviceCapability();
 
   // Get smoothed scroll progress for UI overlays (needs to trigger renders)
   const scrollProgress = useScrollProgress(0.08);
@@ -76,9 +75,7 @@ export default function App() {
   }, []);
   useKonamiCode(activateKonami);
 
-  if (isMobile) {
-    return <MobileFallback />;
-  }
+
 
   return (
     <SceneErrorBoundary>
@@ -86,6 +83,7 @@ export default function App() {
       <div className="canvas-container">
         <Suspense fallback={<div className="w-full h-full bg-navy-950" />}>
           <Scene scrollRef={scrollRef} onSelectProject={handleSelectProject} gpuTier={gpuTier} />
+
         </Suspense>
       </div>
 

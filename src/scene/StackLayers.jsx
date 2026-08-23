@@ -146,7 +146,8 @@ const CARD_ICONS = {
   security: SecurityIcon,
 };
 
-function ProductLayer() {
+function ProductLayer({ gpuTier = 3 }) {
+  const low = gpuTier <= 1;
   const groupRef = useRef();
   const gold = useMemo(GOLD, []);
   const amber = useMemo(AMBER, []);
@@ -189,17 +190,27 @@ function ProductLayer() {
               {/* Glass PBR Panel */}
               <mesh scale={card.scale}>
                 <boxGeometry args={[1, 1, 1]} />
-                <meshPhysicalMaterial
-                  color={hex('#0F172A')}
-                  metalness={0.1}
-                  roughness={0.1}
-                  transmission={0.85}
-                  thickness={0.5}
-                  clearcoat={1.0}
-                  clearcoatRoughness={0.1}
-                  transparent
-                  opacity={0.8}
-                />
+                {low ? (
+                  <meshStandardMaterial
+                    color={hex('#0F172A')}
+                    metalness={0.3}
+                    roughness={0.3}
+                    transparent
+                    opacity={0.7}
+                  />
+                ) : (
+                  <meshPhysicalMaterial
+                    color={hex('#0F172A')}
+                    metalness={0.1}
+                    roughness={0.1}
+                    transmission={0.85}
+                    thickness={0.5}
+                    clearcoat={1.0}
+                    clearcoatRoughness={0.1}
+                    transparent
+                    opacity={0.8}
+                  />
+                )}
               </mesh>
               {/* Sleek Rim Border */}
               <mesh scale={[card.scale[0] * 1.02, card.scale[1] * 1.02, card.scale[2] * 1.02]}>
@@ -690,7 +701,7 @@ function ServerLayer({ onSelectProject }) {
 /* ---------------------------------------------------------------------------
  * LAYER 3 - NETWORK: skills constellation
  * ------------------------------------------------------------------------ */
-function SkillNode({ position, size, pulseSpeed, pulseOffset, name }) {
+function SkillNode({ position, size, pulseSpeed, pulseOffset, name, gpuTier = 3 }) {
   const outerMeshRef = useRef();
   const innerMeshRef = useRef();
   const materialRef = useRef();
@@ -698,6 +709,9 @@ function SkillNode({ position, size, pulseSpeed, pulseOffset, name }) {
   const [hovered, setHovered] = useState(false);
   const color = useMemo(() => new THREE.Color(hex(theme.colors.accentPrimary)), []);
   const gold = useMemo(GOLD, []);
+  const low = gpuTier <= 1;
+  const segs = low ? 8 : 16;
+  const outerSegs = low ? 10 : 20;
 
   useFrame(({ clock }, delta) => {
     if (!outerMeshRef.current) return;
@@ -719,7 +733,7 @@ function SkillNode({ position, size, pulseSpeed, pulseOffset, name }) {
     <group position={position} raycast={() => null}>
       {/* Inner Glowing Metallic Core */}
       <mesh ref={innerMeshRef} raycast={() => null}>
-        <sphereGeometry args={[size, 16, 16]} />
+        <sphereGeometry args={[size, segs, segs]} />
         <meshStandardMaterial
           ref={materialRef}
           color={gold}
@@ -732,18 +746,30 @@ function SkillNode({ position, size, pulseSpeed, pulseOffset, name }) {
 
       {/* Outer Translucent Glass Shell */}
       <mesh ref={outerMeshRef} raycast={() => null}>
-        <sphereGeometry args={[size, 20, 20]} />
-        <meshPhysicalMaterial
-          color={color}
-          transmission={0.88}
-          thickness={0.4}
-          roughness={0.05}
-          clearcoat={1.0}
-          clearcoatRoughness={0.1}
-          ior={1.48}
-          transparent
-          opacity={0.85}
-        />
+        <sphereGeometry args={[size, outerSegs, outerSegs]} />
+        {low ? (
+          <meshStandardMaterial
+            color={color}
+            transparent
+            opacity={0.5}
+            metalness={0.3}
+            roughness={0.2}
+            emissive={color}
+            emissiveIntensity={0.15}
+          />
+        ) : (
+          <meshPhysicalMaterial
+            color={color}
+            transmission={0.88}
+            thickness={0.4}
+            roughness={0.05}
+            clearcoat={1.0}
+            clearcoatRoughness={0.1}
+            ior={1.48}
+            transparent
+            opacity={0.85}
+          />
+        )}
       </mesh>
 
       {/* Interactive 2D HTML skill text label button — carries hover */}
@@ -776,7 +802,7 @@ function ClusterLabel({ position, label }) {
   );
 }
 
-function NetworkLayer() {
+function NetworkLayer({ gpuTier = 3 }) {
   const clusters = useMemo(() => {
     // Filter out empty skill groups
     const groups = content.skills.filter(g => g.items && g.items.length > 0);
@@ -848,7 +874,7 @@ function NetworkLayer() {
         <group key={cluster.id}>
           <ClusterLabel position={cluster.labelPosition} label={cluster.label} />
           {cluster.nodes.map(node => (
-            <SkillNode key={node.id} {...node} />
+            <SkillNode key={node.id} {...node} gpuTier={gpuTier} />
           ))}
           {cluster.links.map(link => (
             <Connection key={link.id} {...link} />
@@ -940,10 +966,10 @@ function MetalLayer({ gpuTier = 3 }) {
 export function StackLayers({ onSelectProject, gpuTier = 3 }) {
   return (
     <group>
-      <ProductLayer />
+      <ProductLayer gpuTier={gpuTier} />
       <ApplicationLayer />
       <ServerLayer onSelectProject={onSelectProject} />
-      <NetworkLayer />
+      <NetworkLayer gpuTier={gpuTier} />
       <MetalLayer gpuTier={gpuTier} />
     </group>
   );
