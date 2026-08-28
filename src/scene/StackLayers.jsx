@@ -488,15 +488,15 @@ function ProjectUnit({ yPos, project, index, onSelect }) {
           onClick={(e) => { e.stopPropagation(); playClick(); onSelect(project); }}
           className={`cursor-pointer px-4 py-2 rounded-lg border text-[11px] font-mono whitespace-nowrap transition-all duration-200 shadow-xl ${
             hovered
-              ? 'bg-[#0B0F19] border-sky-400 text-white shadow-[0_0_24px_rgba(56,189,248,0.5)] scale-105 ring-1 ring-sky-400/50'
-              : 'bg-[#0B0F19]/90 border-white/20 text-slate-200 hover:border-sky-400 hover:text-white'
+              ? 'bg-[#0A0E24] border-amber-400 text-white shadow-[0_0_24px_rgba(255,193,69,0.6)] scale-105 ring-1 ring-amber-400/50'
+              : 'bg-[#0A0E24]/90 border-white/20 text-amber-300 hover:border-amber-400 hover:text-white'
           }`}
         >
-          <span className="text-sky-400 mr-2 animate-pulse">●</span>
+          <span className="text-emerald-400 mr-2 animate-pulse">●</span>
           <span className="font-semibold tracking-wide">{project.title}</span>
           <span className="text-white/20 mx-2">|</span>
           <span className="text-slate-400 text-[10px] uppercase tracking-wider">{project.role}</span>
-          <span className="ml-2.5 text-sky-400 text-[10px] font-bold">&rarr;</span>
+          <span className="ml-2.5 text-amber-400 text-[10px] font-bold">&rarr;</span>
         </button>
       </Html>
     </group>
@@ -612,8 +612,8 @@ function ServerLayer({ onSelectProject }) {
 
       {/* Sleek Horizontal 3D Action Callout */}
       <Html position={[0, CABINET_H / 2 + 1.5, 0]} center distanceFactor={10} style={{ pointerEvents: 'none' }}>
-        <div className="glass-panel px-5 py-2 rounded-lg border border-white/10 text-sky-400 font-mono text-[10px] tracking-widest uppercase shadow-xl flex flex-row items-center gap-3 whitespace-nowrap">
-          <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping shrink-0" />
+        <div className="glass-panel px-5 py-2 rounded-lg border border-amber-400/30 text-amber-300 font-mono text-[10px] tracking-widest uppercase shadow-xl flex flex-row items-center gap-3 whitespace-nowrap">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0" />
           <span>CLICK ANY RACK UNIT TO INSPECT PROJECT &darr;</span>
         </div>
       </Html>
@@ -780,11 +780,11 @@ function SkillNode({ position, size, pulseSpeed, pulseOffset, name, gpuTier = 3 
           onMouseLeave={() => { setHovered(false); }}
           className={`cursor-pointer px-3 py-1.5 rounded-lg border text-[11px] font-mono whitespace-nowrap transition-all duration-200 ${
             hovered
-              ? 'bg-[#0B0F19] border-sky-400 text-white shadow-[0_0_16px_rgba(56,189,248,0.5)] scale-110'
-              : 'bg-[#0B0F19]/90 border-white/15 text-slate-200 hover:border-sky-400/60'
+              ? 'bg-[#0A0E24] border-amber-400 text-white shadow-[0_0_16px_rgba(255,193,69,0.6)] scale-110'
+              : 'bg-[#0A0E24]/90 border-white/15 text-amber-200/90 hover:border-amber-400/60'
           }`}
         >
-          <span className={`mr-1.5 ${hovered ? 'text-sky-400' : 'text-slate-400'}`}>◆</span>
+          <span className={`mr-1.5 ${hovered ? 'text-amber-400' : 'text-slate-400'}`}>◆</span>
           {name}
         </button>
       </Html>
@@ -864,8 +864,8 @@ function NetworkLayer({ gpuTier = 3 }) {
 
       {/* Sleek Horizontal 3D Action Callout Pill above Constellation */}
       <Html position={[0, 4.5, 0]} center distanceFactor={10} style={{ pointerEvents: 'none' }}>
-        <div className="glass-panel px-5 py-2 rounded-lg border border-white/10 text-sky-400 font-mono text-[10px] tracking-widest uppercase shadow-xl flex flex-row items-center gap-3 whitespace-nowrap">
-          <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping shrink-0" />
+        <div className="glass-panel px-5 py-2 rounded-lg border border-amber-400/30 text-amber-300 font-mono text-[10px] tracking-widest uppercase shadow-xl flex flex-row items-center gap-3 whitespace-nowrap">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0" />
           <span>HOVER ON ANY NODE TO VIEW SKILL &darr;</span>
         </div>
       </Html>
