@@ -4,7 +4,8 @@ import { ProgressIndicator } from './components/ProgressIndicator.jsx';
 import { ProjectDetail } from './components/ProjectDetail.jsx';
 import { SceneErrorBoundary } from './components/SceneErrorBoundary.jsx';
 import { SoundToggle } from './components/SoundToggle.jsx';
-import { AICompanion } from './components/AICompanion.jsx';
+// AI guide is switched off for now. To bring it back, uncomment the import and the element, and set ANTHROPIC_API_KEY.
+// import { AICompanion } from './components/AICompanion.jsx';
 import { MobileFallback } from './components/MobileFallback.jsx';
 import { Header } from './components/Header.jsx';
 import { useScrollProgress } from './hooks/useScrollProgress.js';
@@ -123,7 +124,7 @@ function ExperienceApp() {
         <ZoneOverlays scrollProgress={scrollProgress} onSelectProject={handleSelectProject} portrait={portrait} />
         <ProgressIndicator scrollProgress={scrollProgress} portrait={portrait} />
         <SoundToggle portrait={portrait} />
-        <AICompanion />
+        {/* <AICompanion /> */}
       </div>
 
       {/* Project detail panel, opened by clicking a project node in the 3D scene */}

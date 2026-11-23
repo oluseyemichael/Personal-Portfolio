@@ -21,7 +21,8 @@ export const content = {
     contactNote: 'Based in Rivers, Nigeria. Working with teams anywhere. Email is the way in.',
     nowLabel: 'Right now',
     proof: 'CompTIA Security+  ·  ISC2 Certified in Cybersecurity  ·  Vice Chancellor’s Award for Best Innovation of the Year',
-    built: 'This site runs on React, Three.js and Vercel, with a Claude-powered guide.',
+    built: 'This site runs on React, Three.js and Vercel.',
+    // built: 'This site runs on React, Three.js and Vercel, with a Claude-powered guide.', // restore when the guide is back
   },
 
   // Current roles (both ongoing). Sector only, no employer names.

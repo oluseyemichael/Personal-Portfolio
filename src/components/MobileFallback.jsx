@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { content } from '../config/content.js';
-import { AICompanion } from './AICompanion.jsx';
+// AI guide is switched off for now. To bring it back, uncomment the import and the element, and set ANTHROPIC_API_KEY.
+// import { AICompanion } from './AICompanion.jsx';
 import { AboutExtras } from './AboutExtras.jsx';
 import { ProjectDetail } from './ProjectDetail.jsx';
 import { goToZone } from '../lib/navigate.js';
@@ -305,7 +306,7 @@ export function MobileFallback() {
       </footer>
 
       <ProjectDetail project={selected} onClose={closeProject} />
-      <AICompanion />
+      {/* <AICompanion /> */}
     </div>
   );
 }
