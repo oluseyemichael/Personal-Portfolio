@@ -21,7 +21,7 @@ export const content = {
     contactHeading: "Let's build something that holds up.",
     contactNote: 'Available in any city or country. Email is the way in.',
     nowLabel: 'Right now',
-    proof: 'CompTIA Security+  ·  ISC2 Certified in Cybersecurity  ·  Best Innovation in ICT',
+    proof: 'CompTIA Security+  ·  ISC2 Certified in Cybersecurity  ·  Award for Best Innovation in ICT',
     built: 'This site runs on React, Three.js and Vercel.',
     // built: 'This site runs on React, Three.js and Vercel, with a Claude-powered guide.', // restore when the guide is back
   },
@@ -50,7 +50,7 @@ export const content = {
     {
       id: 'roots',
       title: 'Arrupe Jesuit University',
-      text: 'BSc (Hons) ICT, CGPA 3.63/4.0. Won Best Innovation in ICT.',
+      text: 'BSc (Hons) ICT, CGPA 3.63/4.0. Won the Award for Best Innovation in ICT.',
     },
     {
       id: 'support-manager',
@@ -199,7 +199,7 @@ export const content = {
   ],
 
   credentials: [
-    'Best Innovation in ICT, Arrupe Jesuit University (BSc ICT, CGPA 3.63/4.0)',
+    'Award for Best Innovation in ICT, Arrupe Jesuit University (BSc ICT, CGPA 3.63/4.0)',
     'CompTIA Security+ (2026)',
     'ISC2 Certified in Cybersecurity, CC (2026)',
     'Stanford Code in Place (2025)',
