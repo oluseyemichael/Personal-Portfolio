@@ -15,7 +15,7 @@ export const content = {
 
   // Short lines used by the interface (headings, hints, microcopy)
   copy: {
-    hero: "Started in the server room. Now I lead product. I've worked every layer of the stack and I'm proud of it. Scroll to see how I got here.",
+    hero: "I've kept the network up, managed the product, built the app, and designed RTM and growth strategies.",
     workHeading: 'Built it. Shipped it.',
     skillsHeading: 'The stack. All of it.',
     contactHeading: "Let's build something that holds up.",

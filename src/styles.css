@@ -95,7 +95,7 @@
 
 /* Type scales with viewport height so copy never collides with the header on short screens */
 .h-display { font-size: clamp(2rem, 7vh, 4rem); }
-.h-hero { font-size: clamp(3.5rem, 14vh, 7rem); }
+.h-hero { font-size: clamp(3rem, 11vh, 6rem); }
 
 @keyframes scrollcue {
   0% { transform: translateY(-100%); }

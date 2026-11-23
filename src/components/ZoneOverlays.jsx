@@ -80,10 +80,10 @@ export function ZoneOverlays({ scrollProgress: p, onSelectProject, portrait = fa
         <p className={`text-[11px] uppercase text-cream/65 ${portrait ? 'mb-3 tracking-[0.22em]' : 'mb-6 tracking-[0.28em]'}`}>
           {content.name} &nbsp;/&nbsp; {content.location}
         </p>
-        <h1 className={`${headline} ${portrait ? 'text-[clamp(3rem,16vw,4.25rem)] mb-3' : 'h-hero mb-6'}`}>
-          Every <em className="italic text-gold-500">layer.</em>
+        <h1 className={`${headline} ${portrait ? 'text-[clamp(2.5rem,12.5vw,3.5rem)] mb-2' : 'h-hero mb-6'}`}>
+          Servers to <em className="italic text-gold-500">strategy.</em>
         </h1>
-        <p className={`${body} ${portrait ? 'mb-6 max-w-sm' : 'md:text-lg max-w-md mb-10'}`}>
+        <p className={`${body} ${portrait ? 'mb-4 max-w-sm' : 'md:text-lg max-w-md mb-10'}`}>
           {content.copy.hero}
         </p>
         <p className="flex items-center gap-3 text-[11px] uppercase tracking-[0.26em] text-cream/65">

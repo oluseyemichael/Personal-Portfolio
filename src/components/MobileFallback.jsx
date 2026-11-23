@@ -156,11 +156,11 @@ export function MobileFallback() {
             style={{ background: 'radial-gradient(circle, #FFC145 0%, transparent 70%)' }}
           />
           <div className={`${wrap} relative`}>
-            <p className="mb-5 text-xs uppercase tracking-[0.24em] text-cream/65">
+            <p className="mb-5 text-xs uppercase tracking-[0.14em] sm:tracking-[0.24em] text-cream/65">
               {content.name} &nbsp;/&nbsp; {content.location}
             </p>
-            <h1 className="font-display font-light leading-[0.98] tracking-[-0.03em] text-[clamp(3.5rem,19vw,6.5rem)] mb-6">
-              Every <em className="italic text-gold-500">layer.</em>
+            <h1 className="font-display font-light leading-[0.98] tracking-[-0.03em] text-[clamp(3rem,15.5vw,6rem)] mb-6">
+              Servers to <em className="italic text-gold-500">strategy.</em>
             </h1>
             <p className="text-lg sm:text-xl text-cream/90 leading-relaxed mb-4">{content.copy.hero}</p>
             <p className="text-base text-cream/70 leading-relaxed mb-10">{content.bio.short}</p>

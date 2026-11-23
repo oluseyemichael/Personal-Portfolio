@@ -48,7 +48,7 @@ function Slab({ index, y, h, labelSize }) {
 export function HeroStack({ position = [2.9, 1.1, 0] }) {
   const portrait = usePortrait();
   // Portrait: centred, with thicker slabs so the layer names stay legible
-  const pos = portrait ? [0, position[1] + 0.3, 0] : position;
+  const pos = portrait ? [0, position[1] + 0.95, 0] : position;
   const h = portrait ? 0.3 : 0.15;
   const pitch = portrait ? 0.64 : 0.46;
   const labelSize = portrait ? 0.15 : 0.075;
@@ -78,7 +78,7 @@ export function HeroStack({ position = [2.9, 1.1, 0] }) {
   };
 
   return (
-    <group ref={group} position={pos} scale={portrait ? 0.88 : 1} onClick={onClick}>
+    <group ref={group} position={pos} scale={portrait ? 0.72 : 1} onClick={onClick}>
       {LAYER_NAMES.map((_, i) => (
         <Slab key={i} index={i} y={(2 - i) * pitch} h={h} labelSize={labelSize} />
       ))}
