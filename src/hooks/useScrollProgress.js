@@ -18,10 +18,19 @@ export function useScrollProgress(smoothing = 0.08) {
       targetRef.current = scrollHeight > 0 ? Math.min(1, Math.max(0, scrollTop / scrollHeight)) : 0;
     };
 
+    let lastEmitted = -1;
     const animate = () => {
       // Lerp toward the target for smoothness
-      currentRef.current += (targetRef.current - currentRef.current) * smoothing;
-      setProgress(currentRef.current);
+      const diff = targetRef.current - currentRef.current;
+      currentRef.current = Math.abs(diff) < 0.0001 ? targetRef.current : currentRef.current + diff * smoothing;
+      // Only re-render React when the value moved meaningfully; an idle
+      // page otherwise re-rendered the whole tree 60x/second.
+      if (Math.abs(currentRef.current - lastEmitted) >= 0.0005 || currentRef.current === targetRef.current) {
+        if (currentRef.current !== lastEmitted) {
+          lastEmitted = currentRef.current;
+          setProgress(currentRef.current);
+        }
+      }
       rafRef.current = requestAnimationFrame(animate);
     };
 

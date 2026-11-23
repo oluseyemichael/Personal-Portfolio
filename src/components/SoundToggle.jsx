@@ -6,7 +6,7 @@ import { setMuted } from '../audio/soundEngine.js';
  * gesture that starts the AudioContext, satisfying the browser's
  * user-activation requirement for Web Audio.
  */
-export function SoundToggle() {
+export function SoundToggle({ portrait = false }) {
   const [enabled, setEnabled] = useState(false);
 
   const toggle = () => {
@@ -21,7 +21,11 @@ export function SoundToggle() {
       onClick={toggle}
       aria-label={enabled ? 'Mute ambient sound' : 'Unmute ambient sound'}
       aria-pressed={enabled}
-      className="fixed bottom-8 left-8 md:left-16 z-30 w-9 h-9 flex items-center justify-center rounded-full border border-cream/15 text-cream/50 hover:text-gold-400 hover:border-gold-400/40 transition-colors"
+      className={`fixed z-30 flex items-center justify-center rounded-full border border-cream/20 text-cream/70 hover:text-gold-400 hover:border-gold-400/40 transition-colors ${
+        portrait
+          ? 'top-[max(0.5rem,env(safe-area-inset-top))] right-3 w-11 h-11'
+          : 'bottom-8 left-8 md:left-16 w-9 h-9'
+      }`}
     >
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M4 9v6h4l5 5V4L8 9H4z" />

@@ -35,7 +35,7 @@ export function ProjectDetail({ project, onClose }) {
       onClick={onClose}
     >
       <div
-        className="h-full w-full max-w-md bg-[#0A0E24] border-l border-white/12 px-8 md:px-10 py-10 overflow-y-auto"
+        className="h-full w-full max-w-md bg-[#0A0E24] border-l border-white/12 px-5 sm:px-8 md:px-10 py-6 sm:py-10 overflow-y-auto overscroll-contain"
         style={{
           transform: open ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -49,9 +49,9 @@ export function ProjectDetail({ project, onClose }) {
               type="button"
               onClick={onClose}
               aria-label="Close project details"
-              className="mb-8 font-mono text-[10px] text-slate-400 hover:text-amber-400 tracking-[0.3em] uppercase transition-colors flex items-center gap-2"
+              className="mb-6 -ml-2 px-2 min-h-11 font-mono text-[11px] text-slate-300 hover:text-amber-400 tracking-[0.25em] uppercase transition-colors flex items-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"
             >
-              <span>&larr;</span> CLOSE PANEL
+              <span>&larr;</span> Close
             </button>
 
             <p className="font-mono text-[10px] text-amber-400 font-semibold tracking-[0.3em] uppercase mb-2">
@@ -70,7 +70,7 @@ export function ProjectDetail({ project, onClose }) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-400 text-slate-950 font-mono text-xs font-semibold hover:bg-amber-300 transition-all shadow-lg shadow-amber-400/20"
                 >
-                  <span>VISIT LIVE SITE</span>
+                  <span>Visit the live site</span>
                   <span>&rarr;</span>
                 </a>
               </div>
@@ -85,7 +85,7 @@ export function ProjectDetail({ project, onClose }) {
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-3">
                   <p className="font-mono text-[10px] text-amber-400 font-semibold tracking-[0.25em] uppercase">
-                    INTERFACE SNAPSHOTS
+                    Screenshots
                   </p>
                   <span className="font-mono text-[9px] text-slate-400 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded border border-white/10">
                     CONFIDENTIAL PREVIEW
@@ -107,7 +107,7 @@ export function ProjectDetail({ project, onClose }) {
 
             <div className="mb-8">
               <p className="font-mono text-[10px] text-slate-400 tracking-[0.25em] uppercase mb-3">
-                Tech Stack & Competencies
+                Built with
               </p>
               <div className="flex flex-wrap gap-2">
                 {displayProject.tech.map((t) => (

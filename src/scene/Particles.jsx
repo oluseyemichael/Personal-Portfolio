@@ -49,10 +49,10 @@ export function Particles({ count = theme.scene.particleCount }) {
       </bufferGeometry>
       <pointsMaterial
         color={color}
-        size={0.05}
+        size={0.035}
         sizeAttenuation
         transparent
-        opacity={0.5}
+        opacity={0.3}
         depthWrite={false}
         toneMapped={false}
       />

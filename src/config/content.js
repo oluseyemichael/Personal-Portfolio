@@ -1,93 +1,127 @@
-// All portfolio content in one place.
-// Updated with Michael Oluseye's CV & real-world project credentials.
+// All portfolio content in one place. Facts come from the two CVs
+// (Michael_Oluseye_ITAnalyst.pdf and Michael_Oluseye_ITEngineer.pdf).
+// Employer names are deliberately NOT on the public site: roles are
+// described by sector instead. The AI guide reads this whole object, so
+// anything here ends up in its answers.
+// Voice: first person, confident, a little playful, real numbers. No em dashes.
 
 export const content = {
   name: 'Michael Oluseye',
   shortName: 'Michael',
-  title: 'Product & Operations Analyst | IT Business Analyst',
-  tagline: 'Bridging engineering, business strategy, and user experience at every layer.',
+  title: 'IT Business Analyst & Product Manager',
+  tagline: 'I translate between the people who want it and the people who build it.',
   location: 'Rivers, Nigeria',
 
+  // Short lines used by the interface (headings, hints, microcopy)
+  copy: {
+    hero: "Started in the server room. Now I lead product. I've worked every layer of the stack and I'm proud of it. Scroll to see how I got here.",
+    workHeading: 'Built it. Shipped it.',
+    skillsHeading: 'The stack. All of it.',
+    contactHeading: "Let's build something that holds up.",
+    contactNote: 'Based in Rivers, Nigeria. Working with teams anywhere. Email is the way in.',
+    nowLabel: 'Right now',
+    proof: 'CompTIA Security+  ·  ISC2 Certified in Cybersecurity  ·  Vice Chancellor’s Award for Best Innovation of the Year',
+    built: 'This site runs on React, Three.js and Vercel, with a Claude-powered guide.',
+  },
+
+  // Current roles (both ongoing). Sector only, no employer names.
+  now: [
+    { org: 'AI crowdsourcing platform', role: 'Product & Operations Analyst', place: 'US-based, remote' },
+    { org: 'Education sector', role: 'IT Infrastructure Engineer', place: 'Rivers, Nigeria' },
+  ],
+
+  // Numbers worth knowing, straight from the CVs
+  stats: [
+    { value: '2,000', label: 'concurrent users on the offline exam system' },
+    { value: '99.5%', label: 'network uptime across 2,000+ devices' },
+    { value: '24h → 6h', label: 'support resolution time at an IoT company' },
+    { value: '−40%', label: 'support resolution time at a school' },
+  ],
+
   bio: {
-    headline: 'From server racks to product strategy.',
-    body: 'Product-minded IT Business Analyst and Infrastructure Engineer bridging technical architecture, business strategy, and end-user needs. Currently leading product strategy, monetisation logic, and operational execution for workbrook (an AI hiring marketplace), while having engineered production systems ranging from 2,000 concurrent user CBT platforms to full-stack clinic management systems.',
-    short: 'Product & Operations Analyst and IT Business Analyst. Track record includes cutting support resolution times by 75%, 95% UAT pre-launch issue resolution, 99.5% infrastructure uptime, and Vice Chancellor’s Award for Best Innovation of the Year.',
+    headline: 'Infra and product. Yes, both.',
+    body: 'I run IT infrastructure in the education sector and lead product and operations at an AI-powered crowdsourcing platform. I built an offline exam system for 2,000 people at once, keep a campus network at 99.5% uptime, and took a support queue from 24-hour fixes to six. Every layer, same job: find out what the business wants, then make the system do it.',
+    short: 'Receipts: support fixes cut from 24 hours to 6, 95% of critical pre-launch issues cleared in UAT, a 1,000+ user network at 99.5% uptime.',
   },
 
   story: [
     {
       id: 'roots',
       title: 'Arrupe Jesuit University',
-      text: 'BSc (Hons) ICT (CGPA: 3.63/4.0). Awarded the Vice Chancellor’s Award for Best Innovation of the Year. Built IoT support workflows and legal AI APIs.',
+      text: 'BSc (Hons) ICT, CGPA 3.63/4.0. Won the Vice Chancellor’s Award for Best Innovation of the Year.',
     },
     {
       id: 'support-manager',
-      title: 'GABE Remote Asset Management',
-      text: 'Technical Support Manager scaling enterprise clients by 40%. Reduced mean time to resolution from 24 hours to 6 hours (75% improvement) across 300+ accounts.',
+      title: 'IoT fleet tracking company',
+      text: 'Intern, then engineer, then manager of an eight-person team supporting 300+ enterprise clients. Fix times dropped from 24 hours to 6.',
     },
     {
       id: 'infrastructure',
-      title: 'Jesuit Memorial College',
-      text: 'IT Infrastructure Engineer maintaining 99.5% uptime for 1,000+ users and 2,000+ devices. Built and deployed SchoolClinic (Next.js 14/Prisma) and 2,000-user CBT system.',
+      title: 'Education sector',
+      text: 'IT infrastructure engineer, still. I keep the network up 99.5% of the time for 1,000+ users on 2,000+ devices, cut support resolution time by 40%, and built the clinic system and the offline exam platform.',
     },
     {
       id: 'product',
-      title: 'workbrook (Texas, USA)',
-      text: 'Leading product and operations for an AI-powered hiring marketplace. Architected tiered monetisation, wallet & multi-currency payment logic, n8n automations, and global multi-country expansion.',
+      title: 'AI crowdsourcing platform (US, remote)',
+      text: 'Product and operations: pricing, payments, automation and a multi-country rollout. Also current.',
     },
   ],
 
   projects: [
     {
-      id: 'workbrook',
-      title: 'workbrook',
-      subtitle: 'AI-Powered Hiring Marketplace (Texas, USA)',
-      description: 'Lead product strategy, requirement engineering, and operational execution for a multi-tier AI hiring platform. Architected the core tiered monetisation model, structured multi-currency wallet payment flows, built n8n workflow automations for live job distribution, and drove AI matching feature rollouts for global expansion.',
+      id: 'crowdsourcing',
+      title: 'AI Crowdsourcing Platform',
+      subtitle: 'US-based, fully remote. My current role.',
+      description:
+        "Business goals go in, specs developers can actually build from come out, and I keep sprints on schedule. I designed the tiered pricing that became the platform's revenue engine, worked out the wallet and multi-currency payment logic behind it, and built an n8n automation that feeds live listings to distribution channels. I also coordinate the AI matching and talent discovery features.",
       role: 'Product & Operations Analyst',
-      tech: ['Product Strategy', 'Monetisation Design', 'n8n Automation', 'Payment Infrastructure', 'AI Features', 'Growth Mechanics'],
-      highlight: 'Core revenue engine design + multi-country global expansion',
+      tech: ['Product Strategy', 'Monetisation Design', 'n8n Automation', 'Payment Logic', 'AI Features', 'Growth Mechanics'],
+      highlight: 'I designed the pricing that became the revenue engine.',
       layer: 'product',
-      liveUrl: 'https://workbrook.com',
     },
     {
       id: 'schoolclinic',
       title: 'SchoolClinic',
-      subtitle: 'Full-Stack Clinic Management System',
-      description: 'Owned end-to-end design, build, and on-premise deployment of a full-stack clinic management platform. Features role-based workflow routing for doctors, nurses, pharmacists, and lab scientists. Replaced paper records and reduced monthly billing reconciliation from hours to a single export.',
-      role: 'Lead Architect & Solo Developer',
-      tech: ['Next.js 14', 'TypeScript', 'Prisma ORM', 'PostgreSQL 16', 'Role Routing', 'On-Premise Server'],
-      highlight: 'Cut billing reconciliation from hours to a single report export',
+      subtitle: 'Clinic management system, deployed on-premise',
+      description:
+        'The clinic ran on paper, and the accounts team lost hours every month reconciling billing. So I mapped how a patient actually moves through the clinic and built the whole system around it: separate workflows for nurses, doctors, lab scientists and pharmacists, running on a server on site. Month-end billing is now one report export.',
+      role: 'Architect & Developer',
+      tech: ['Next.js 14', 'TypeScript', 'Prisma ORM', 'PostgreSQL 16', 'Role-based Routing', 'On-Premise Server'],
+      highlight: 'Month-end billing went from hours to one export.',
       layer: 'application',
       images: ['/clinic-billing.png', '/clinic-pharmacy.png'],
     },
     {
       id: 'cbt',
       title: 'Offline CBT Platform',
-      subtitle: '2,000 Concurrent Users, Zero Latency',
-      description: 'Architected and deployed an offline Computer-Based Testing platform supporting 2,000 concurrent student users during peak examination periods. Delivered database schema, network topology, Linux server kernel tuning, and application layer end to end with 99.5% uptime.',
-      role: 'Infrastructure & Software Architect',
-      tech: ['Linux Server Tuning', 'Database Schemas', 'Network Topology', 'High-Load Concurrency', 'Uptime Engineering'],
-      highlight: 'Zero latency under full 2,000 concurrent user load',
+      subtitle: '2,000 concurrent users, no internet needed',
+      description:
+        '2,000 people taking a computer-based exam at once, with no internet to lean on. I built all of it: the database schema, the network layout, the Linux server setup and the application, working from what school leadership, IT staff and the people taking the exam needed.',
+      role: 'Infrastructure Engineer',
+      tech: ['Linux Servers', 'Database Design', 'Network Design', 'High-Load Concurrency'],
+      highlight: 'Zero latency with all 2,000 users online.',
       layer: 'server',
     },
     {
       id: 'legal-ai',
       title: 'Legal Research AI APIs',
       subtitle: 'Top 5 Innovative Startup in Zimbabwe',
-      description: 'Gathered requirements and designed RESTful APIs for an AI legal research assistant serving 10,000+ daily queries at 99.2% uptime. Reduced API response times by 60% via Redis caching and query optimisation.',
-      role: 'Backend Developer (Procode Platforms)',
-      tech: ['REST APIs', 'Python', 'Redis Caching', 'Query Optimisation', 'API Security'],
-      highlight: '60% faster response times at 10,000+ daily queries',
+      description:
+        'I interviewed legal professionals to find out what they actually needed from AI research, then built the backend: Python and Flask, a RAG pipeline, and REST APIs handling 10,000+ requests a day at 99.2% uptime. Redis caching and database indexing cut response times by 60%.',
+      role: 'Backend Developer (legal-tech startup)',
+      tech: ['Python / Flask', 'REST APIs', 'RAG Pipeline', 'Redis Caching', 'Database Indexing'],
+      highlight: '60% faster responses at 10,000+ requests a day.',
       layer: 'application',
     },
     {
-      id: 'gabe-iot',
-      title: 'GABE Remote Asset Management',
-      subtitle: '300+ Enterprise Clients & 98% SLA Compliance',
-      description: 'Streamlined technical support operations across an 8-person team. Reduced mean time to resolution from 24h to 6h (75% improvement), achieved 98% SLA compliance, and scaled the enterprise client portfolio by 40%.',
-      role: 'Technical Support Manager',
-      tech: ['IoT Configuration', 'BPM', 'SLA Management', 'Enterprise Relations', 'SOP Documentation'],
-      highlight: '75% reduction in resolution time (24h to 6h)',
+      id: 'iot-support',
+      title: 'IoT Fleet Tracking Support',
+      subtitle: '300+ enterprise clients, 98% SLA compliance',
+      description:
+        'The clients track vehicles and assets with IoT devices: GPS trackers, fuel sensors, temperature monitors, door sensors. I started as an intern, moved up to the engineer configuring them for enterprise fleets, then managed an eight-person team. We rebuilt triage and the knowledge base, resolution time fell from 24 hours to 6, and the client portfolio grew 40%.',
+      role: 'Technical Implementation Manager',
+      tech: ['IoT Configuration', 'SLA Management', 'Process Improvement', 'SOP Documentation', 'Enterprise Support'],
+      highlight: 'Resolution time cut from 24 hours to 6.',
       layer: 'network',
     },
   ],
@@ -99,11 +133,11 @@ export const content = {
         'Requirements Engineering',
         'Product Strategy',
         'Monetisation Design',
-        'UAT Clearance',
+        'UAT',
         'Process Mapping',
         'Gap Analysis',
         'Stakeholder Management',
-        'User Analytics',
+        'Agile / Scrum',
       ],
     },
     {
@@ -127,10 +161,10 @@ export const content = {
         'Linux Server',
         'Windows Server',
         'Active Directory',
-        'LAN/WAN Topology',
-        'AWS Cloud',
+        'LAN/WAN Design',
+        'AWS',
         'Azure',
-        'Nginx Web Server',
+        'Nginx',
         'CCTV / Biometrics / RFID',
       ],
     },
@@ -139,36 +173,36 @@ export const content = {
       items: [
         'CompTIA Security+',
         'ISC2 Certified in Cybersecurity (CC)',
-        'Threat & Vulnerability Mgmt',
+        'Threat & Vulnerability Management',
         'Access Control',
         'Disaster Recovery',
         'Network Security',
         'Firewalls',
-        'ITIL Framework',
+        'ITIL',
       ],
     },
     {
       group: 'Automation & DevOps',
       items: [
-        'n8n Automation',
-        'GitHub Actions',
-        'CI/CD Pipelines',
-        'Docker Containers',
-        'Postman API Testing',
+        'n8n',
+        'Docker',
+        'Git / GitHub',
+        'CI/CD',
+        'Postman',
         'JIRA / Confluence',
-        'Figma Wireframing',
-        'Stanford Code in Place',
+        'Notion',
+        'Figma',
       ],
     },
   ],
 
   credentials: [
-    'Vice Chancellor’s Award for Best Innovation of the Year — Arrupe Jesuit University (BSc ICT, CGPA: 3.63/4.0)',
-    'CompTIA Security+ Certification (2026)',
-    'ISC2 Certified in Cybersecurity (CC) (2026)',
-    'Stanford Code in Place (Stanford University, 2025)',
-    'Huawei Seeds for the Future (Huawei, 2023)',
-    'Front-End Development (Selfless Hearts Foundation, 2024)',
+    'Vice Chancellor’s Award for Best Innovation of the Year, Arrupe Jesuit University (BSc ICT, CGPA 3.63/4.0)',
+    'CompTIA Security+ (2026)',
+    'ISC2 Certified in Cybersecurity, CC (2026)',
+    'Stanford Code in Place (2025)',
+    'Huawei Seeds for the Future (2023)',
+    'Front-End Development, Selfless Hearts Foundation (2024)',
   ],
 
   contact: {
@@ -176,6 +210,5 @@ export const content = {
     phone: '+234 703 723 4416',
     github: 'https://github.com/oluseyemichael',
     linkedin: 'https://www.linkedin.com/in/michael-oluseye-406558216/',
-    cta: "Let's build something that holds up in production.",
   },
 };

@@ -7,6 +7,13 @@ const UP = new THREE.Vector3(0, 1, 0);
 const MAX_PITCH = 1.3; // radians - keeps the view from flipping past vertical
 const LOOK_SPEED = 0.004;
 
+// Portrait framing: a wider field of view, and the rendered image shifted up
+// so the 3D subject sits in the upper part of the screen above the copy.
+const PORTRAIT_FOV = 62;
+const DESKTOP_FOV = 50;
+const PORTRAIT_SHIFT = 0.2; // fraction of screen height
+const PORTRAIT_X = 0.12; // objects are centred in portrait, so flatten the path's sideways drift
+
 /**
  * Moves the camera along the spline based on scroll progress, exactly
  * as before. On top of that, dragging with the mouse anywhere on the
@@ -19,6 +26,8 @@ const LOOK_SPEED = 0.004;
  */
 export function CameraRig({ scrollRef }) {
   const { camera, gl } = useThree();
+  const size = useThree((st) => st.size);
+  const portrait = useRef(false);
   const targetPos = useRef(new THREE.Vector3());
   const targetLookAt = useRef(new THREE.Vector3());
   const direction = useRef(new THREE.Vector3());
@@ -29,6 +38,18 @@ export function CameraRig({ scrollRef }) {
   const pitch = useRef(0);
   const dragging = useRef(false);
   const lastPointer = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const isPortrait = size.width / size.height < 0.9;
+    portrait.current = isPortrait;
+    camera.fov = isPortrait ? PORTRAIT_FOV : DESKTOP_FOV;
+    if (isPortrait) {
+      camera.setViewOffset(size.width, size.height, 0, size.height * PORTRAIT_SHIFT, size.width, size.height);
+    } else {
+      camera.clearViewOffset();
+    }
+    camera.updateProjectionMatrix();
+  }, [size, camera]);
 
   useEffect(() => {
     const dom = gl.domElement;
@@ -62,6 +83,10 @@ export function CameraRig({ scrollRef }) {
     const t = easeScroll(scrollRef.current);
     positionCurve.getPointAt(t, targetPos.current);
     lookAtCurve.getPointAt(t, targetLookAt.current);
+    if (portrait.current) {
+      targetPos.current.x *= PORTRAIT_X;
+      targetLookAt.current.x *= PORTRAIT_X;
+    }
 
     // Smoothly interpolate the camera toward the target position.
     // The lerp factor is tuned for 60fps; scale it by delta so the

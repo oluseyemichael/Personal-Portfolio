@@ -52,7 +52,39 @@ export const lookAtCurve = new THREE.CatmullRomCurve3(
   0.3,
 );
 
-// Ease a linear scroll (0 to 1) into something cinematic
-export function easeScroll(t) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+// Camera spline parameter (0-1, by arc length) at which each layer is
+// framed best. Found by locating the spline point nearest the waypoint
+// chosen as that layer's hero shot.
+const HERO_WAYPOINTS = [0, 2, 4, 6, 8];
+function nearestT(target) {
+  let best = 0;
+  let bestD = Infinity;
+  const p = new THREE.Vector3();
+  for (let i = 0; i <= 800; i++) {
+    const t = i / 800;
+    positionCurve.getPointAt(t, p);
+    const d = p.distanceToSquared(target);
+    if (d < bestD) { bestD = d; best = t; }
+  }
+  return best;
+}
+const LAYER_T = HERO_WAYPOINTS.map((w) => nearestT(new THREE.Vector3(...cameraWaypoints[w].position)));
+
+// Scroll position (0-1) at the centre of each layer's dwell. Layers are
+// evenly spaced: zones are 0.2 wide, centred at 0.1, 0.3, 0.5, 0.7, 0.9.
+const smootherstep = (x) => x * x * x * (x * (x * 6 - 15) + 10);
+
+/**
+ * Maps linear scroll to a spline parameter. The camera eases to a near
+ * stop at the heart of every layer (so each one is actually framed while
+ * its copy is on screen) and travels between them in the gaps.
+ */
+export function easeScroll(s) {
+  const n = LAYER_T.length;
+  const centre = (i) => 0.1 + i * 0.2;
+  if (s <= centre(0)) return LAYER_T[0];
+  if (s >= centre(n - 1)) return LAYER_T[n - 1];
+  const i = Math.min(n - 2, Math.floor((s - 0.1) / 0.2));
+  const u = (s - centre(i)) / 0.2;
+  return LAYER_T[i] + (LAYER_T[i + 1] - LAYER_T[i]) * smootherstep(u);
 }

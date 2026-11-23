@@ -17,7 +17,7 @@
   }
 
   h1, h2, h3, h4, .font-display {
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: 'Fraunces', Georgia, serif;
   }
 
   code, pre, .font-mono {
@@ -38,6 +38,8 @@
     inset: 0;
     width: 100vw;
     height: 100vh;
+    /* Large viewport: the canvas does not resize as mobile browser bars collapse */
+    height: 100lvh;
     z-index: 1;
   }
 
@@ -55,7 +57,7 @@
     z-index: 5;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 130% 95% at 50% 50%, transparent 40%, rgba(5, 8, 24, 0.85) 100%),
+      radial-gradient(ellipse 130% 95% at 50% 50%, transparent 50%, rgba(5, 8, 24, 0.7) 100%),
       linear-gradient(to bottom, rgba(5, 8, 24, 0.5) 0%, transparent 15%, transparent 85%, rgba(5, 8, 24, 0.6) 100%);
   }
 
@@ -89,6 +91,15 @@
   .animate-spin-slow {
     animation: spin 12s linear infinite;
   }
+}
+
+/* Type scales with viewport height so copy never collides with the header on short screens */
+.h-display { font-size: clamp(2rem, 7vh, 4rem); }
+.h-hero { font-size: clamp(3.5rem, 14vh, 7rem); }
+
+@keyframes scrollcue {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(260%); }
 }
 
 @keyframes spin {

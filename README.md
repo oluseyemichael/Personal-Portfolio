@@ -14,25 +14,15 @@ Michael's career climbed the stack: support > infrastructure > backend > product
 
 Tagline: "I've worked at every layer."
 
-## Status: Sprint 0.5
+## Status
 
-Working now:
-- Vertical scroll-driven camera descent through 5 distinct layer environments
-- Real content from Michael's CV (bio, 5 projects, skills, contact)
-- Warm amber/gold on deep navy design system
-- Progress indicator, branded loading screen, zone text overlays
+Working: scroll-driven 5-layer descent, real CV content, clickable project nodes with detail panel, skills clusters, procedural sound (off by default), GPU tiering with runtime adaptive quality, portrait 3D mode for phones, plus a lite 2D site for no-WebGL / data-saver / on request (`?view=2d`; `?view=3d` forces 3D), AI companion chat, easter eggs, analytics hooks, OG tags.
 
-Not yet built (later sprints):
-- Real 3D avatar (Sprint 1) - currently an abstract glowing figure
-- Clickable project nodes with detail overlays (Sprint 2)
-- AI companion powered by Claude (Sprint 3)
-- Mobile 2D fallback (Sprint 3)
+Not yet: real 3D avatar, custom domain, Plausible script.
 
-## TODO for Michael
+## AI companion
 
-Open `src/config/content.js` and replace:
-- `YOUR_GITHUB_USERNAME` with your GitHub username
-- `YOUR_LINKEDIN_HANDLE` with your LinkedIn handle
+Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` (and add the same variable in Vercel). The key stays server-side in `api/chat.js`.
 
 ## Setup
 
@@ -62,10 +52,10 @@ src/
     Scene.jsx         # Root canvas, lights, fog
     CameraPath.js     # LAYERS constants + descent waypoints
     CameraRig.jsx     # Camera follows scroll along spline
-    StackLayers.jsx   # All five layer environments
-    NeuralNode.jsx    # Glowing node (used by network layer)
-    Connection.jsx    # Glowing link (used by network layer)
-    AbstractAvatar.jsx# Placeholder figure at the surface
+    StackLayers.jsx   # Layer environments (application, network, bare metal)
+    HeroStack.jsx     # Landing centrepiece: five slabs, one per layer
+    ServerRack.jsx    # 3D rack; each project is a clickable server
+    Connection.jsx    # Glowing link (application and network layers)
     Particles.jsx     # Vertical atmosphere shaft
   components/
     Header.jsx

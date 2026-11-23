@@ -1,57 +1,82 @@
 import { theme } from '../config/theme.js';
 import { playClick, playHover } from '../audio/soundEngine.js';
 
+const KEYS = ['landing', 'about', 'work', 'skills', 'contact'];
+
 function scrollToProgress(target) {
   const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
   window.scrollTo({ top: scrollHeight * target, behavior: 'smooth' });
 }
 
-export function Header({ scrollProgress = 0 }) {
-  const LAYER_KEYS = ['landing', 'about', 'work', 'skills', 'contact'];
+export function Header({ scrollProgress = 0, portrait = false }) {
+  const index = Math.max(
+    0,
+    KEYS.findIndex((k) => scrollProgress >= theme.zones[k].start && scrollProgress < theme.zones[k].end),
+  );
+
+  if (portrait) {
+    // Compact phone header: name, the layer you are on, and a lite-version escape hatch.
+    return (
+      <header
+        className="fixed top-0 inset-x-0 z-30 flex items-center justify-between pl-5 pr-16 pointer-events-none"
+        style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(3.5rem + env(safe-area-inset-top))' }}
+      >
+        <div className="pointer-events-auto leading-tight">
+          <p className="font-display text-base text-cream tracking-tight">Michael Oluseye</p>
+          <p className="text-[10px] uppercase tracking-[0.22em] text-gold-500">
+            <span className="tabular-nums">0{index}</span>
+            <span className="text-cream/50"> / 04 &nbsp;</span>
+            <span className="text-cream/75">{theme.zones[KEYS[index]].label}</span>
+          </p>
+        </div>
+        <a
+          href="?view=2d"
+          className="pointer-events-auto inline-flex items-center min-h-11 px-2 text-[11px] uppercase tracking-[0.2em] text-cream/65 active:text-gold-500"
+        >
+          Lite
+        </a>
+      </header>
+    );
+  }
 
   return (
-    <header className="fixed top-4 left-4 right-4 md:top-6 md:left-8 md:right-8 z-30 flex items-center justify-between pointer-events-none">
-      {/* Brand & Live Telemetry Badge */}
-      <div className="glass-panel px-4 py-2 rounded-lg border border-white/12 flex items-center gap-3 pointer-events-auto shadow-xl">
-        <div className="status-dot" />
-        <span className="font-display text-sm font-medium text-slate-100 tracking-tight">
-          SeyeTheGreat
-        </span>
-        <span className="hidden sm:inline-block w-px h-3.5 bg-white/10" />
-        <span className="hidden sm:inline-block font-mono text-[10px] text-slate-400 tracking-widest uppercase">
-          SYS // 2026
-        </span>
-      </div>
+    <header className="fixed top-0 inset-x-0 z-30 flex items-center justify-between px-6 md:px-16 lg:px-24 h-20 pointer-events-none">
+      <a
+        href="/"
+        className="pointer-events-auto font-display text-lg text-cream tracking-tight"
+        aria-label="Michael Oluseye, home"
+      >
+        Michael Oluseye
+      </a>
 
-      {/* Interactive Layer Quick Jump Navbar */}
-      <nav className="hidden lg:flex items-center gap-1.5 glass-panel px-3 py-1.5 rounded-lg border border-white/12 pointer-events-auto shadow-xl">
-        {LAYER_KEYS.map((key) => {
+      <nav className="hidden lg:flex items-center gap-8 pointer-events-auto" aria-label="Sections">
+        {KEYS.map((key) => {
           const zone = theme.zones[key];
-          const isActive = scrollProgress >= zone.start && scrollProgress <= zone.end;
+          const active = scrollProgress >= zone.start && scrollProgress < zone.end;
           return (
             <button
               key={key}
               type="button"
-              onClick={() => { playClick(); scrollToProgress(zone.start); }}
+              onClick={() => {
+                playClick();
+                scrollToProgress(zone.focus);
+              }}
               onMouseEnter={playHover}
-              className={`px-3 py-1 rounded-md font-mono text-[11px] uppercase tracking-wider transition-all duration-200 ${
-                isActive
-                  ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40 shadow-[0_0_10px_rgba(255,193,69,0.2)]'
-                  : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
+              aria-current={active ? 'true' : undefined}
+              className={`relative py-2 text-[11px] uppercase tracking-[0.24em] transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-500 ${
+                active ? 'text-gold-500' : 'text-cream/50 hover:text-cream'
               }`}
             >
               {zone.label}
+              <span
+                className={`absolute left-0 right-0 -bottom-0.5 h-px bg-gold-500 origin-left transition-transform duration-300 ${
+                  active ? 'scale-x-100' : 'scale-x-0'
+                }`}
+              />
             </button>
           );
         })}
       </nav>
-
-      {/* Telemetry Coordinate Readout */}
-      <div className="glass-panel px-4 py-2 rounded-lg border border-white/12 hidden md:flex items-center gap-2 pointer-events-auto">
-        <span className="font-mono text-[10px] text-amber-400 font-semibold tracking-widest uppercase">
-          DEPTH: -{Math.round(scrollProgress * 48).toString().padStart(2, '0')}M
-        </span>
-      </div>
     </header>
   );
 }

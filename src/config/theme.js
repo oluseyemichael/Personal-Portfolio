@@ -42,18 +42,19 @@ export const theme = {
   // Scene proportions & path physics
   scene: {
     totalPathLength: 100,      // World units along camera spline
-    fogNear: 12,
-    fogFar: 80,
+    fogNear: 9,
+    fogFar: 38,
     particleCount: 350,        // Atmospheric dust particles
   },
 
   // Content zones along the scroll path (0 to 1 normalized).
+  // `focus` is the scroll position where the camera frames the layer.
   zones: {
-    landing: { start: 0.0, end: 0.15, label: 'Product', code: '00_SURFACE' },
-    about:   { start: 0.15, end: 0.35, label: 'About', code: '01_APPLICATION' },
-    work:    { start: 0.35, end: 0.65, label: 'Work', code: '02_SERVER' },
-    skills:  { start: 0.65, end: 0.85, label: 'Skills', code: '03_NETWORK' },
-    contact: { start: 0.85, end: 1.0,  label: 'Contact', code: '04_BARE_METAL' },
+    landing: { start: 0.0, end: 0.2, focus: 0.1, label: 'Product', code: '00_SURFACE' },
+    about:   { start: 0.2, end: 0.4, focus: 0.3, label: 'About', code: '01_APPLICATION' },
+    work:    { start: 0.4, end: 0.6, focus: 0.5, label: 'Work', code: '02_SERVER' },
+    skills:  { start: 0.6, end: 0.8, focus: 0.7, label: 'Skills', code: '03_NETWORK' },
+    contact: { start: 0.8, end: 1.0, focus: 0.9, label: 'Contact', code: '04_BARE_METAL' },
   },
 };
 
