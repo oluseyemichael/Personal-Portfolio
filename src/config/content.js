@@ -10,7 +10,8 @@ export const content = {
   shortName: 'Michael',
   title: 'IT Business Analyst & Product Manager',
   tagline: 'I translate between the people who want it and the people who build it.',
-  location: 'Rivers, Nigeria',
+  // Shown next to the name on the landing. Deliberately not a real place.
+  location: "Any city you're in",
 
   // Short lines used by the interface (headings, hints, microcopy)
   copy: {
@@ -18,9 +19,9 @@ export const content = {
     workHeading: 'Built it. Shipped it.',
     skillsHeading: 'The stack. All of it.',
     contactHeading: "Let's build something that holds up.",
-    contactNote: 'Based in Rivers, Nigeria. Working with teams anywhere. Email is the way in.',
+    contactNote: 'Available in any city or country. Email is the way in.',
     nowLabel: 'Right now',
-    proof: 'CompTIA Security+  ·  ISC2 Certified in Cybersecurity  ·  Vice Chancellor’s Award for Best Innovation of the Year',
+    proof: 'CompTIA Security+  ·  ISC2 Certified in Cybersecurity  ·  Best Innovation in ICT',
     built: 'This site runs on React, Three.js and Vercel.',
     // built: 'This site runs on React, Three.js and Vercel, with a Claude-powered guide.', // restore when the guide is back
   },
@@ -28,7 +29,7 @@ export const content = {
   // Current roles (both ongoing). Sector only, no employer names.
   now: [
     { org: 'AI crowdsourcing platform', role: 'Product & Operations Analyst', place: 'US-based, remote' },
-    { org: 'Education sector', role: 'IT Infrastructure Engineer', place: 'Rivers, Nigeria' },
+    { org: 'Education sector', role: 'IT Infrastructure Engineer', place: 'On site' },
   ],
 
   // Numbers worth knowing, straight from the CVs
@@ -49,7 +50,7 @@ export const content = {
     {
       id: 'roots',
       title: 'Arrupe Jesuit University',
-      text: 'BSc (Hons) ICT, CGPA 3.63/4.0. Won the Vice Chancellor’s Award for Best Innovation of the Year.',
+      text: 'BSc (Hons) ICT, CGPA 3.63/4.0. Won Best Innovation in ICT.',
     },
     {
       id: 'support-manager',
@@ -198,7 +199,7 @@ export const content = {
   ],
 
   credentials: [
-    'Vice Chancellor’s Award for Best Innovation of the Year, Arrupe Jesuit University (BSc ICT, CGPA 3.63/4.0)',
+    'Best Innovation in ICT, Arrupe Jesuit University (BSc ICT, CGPA 3.63/4.0)',
     'CompTIA Security+ (2026)',
     'ISC2 Certified in Cybersecurity, CC (2026)',
     'Stanford Code in Place (2025)',

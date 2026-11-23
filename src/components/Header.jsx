@@ -46,7 +46,7 @@ export function Header({ scrollProgress = 0, portrait = false }) {
         className="pointer-events-auto font-display text-lg text-cream tracking-tight"
         aria-label="Michael Oluseye, home"
       >
-        Michael Oluseye
+        SeyeTheGreat
       </a>
 
       <nav className="hidden lg:flex items-center gap-8 pointer-events-auto" aria-label="Sections">
